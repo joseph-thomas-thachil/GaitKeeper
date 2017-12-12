@@ -44,16 +44,18 @@ class busyThread(QObject) :
         # vid = vprocess("souces/gait.mp4")
 
     ########################
-        self.cap = cv2.VideoCapture("sources/gait.mp4")
-        self.frame_width = int(self.cap.get(3))
-        self.frame_height = int(self.cap.get(4))
+        self.cap = cv2.VideoCapture(0)
+        self.frameWidth = int(self.cap.get(3))
+        self.frameHeight = int(self.cap.get(4))
 
-        self.out_original = cv2.VideoWriter('cache/original.avi', cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), 30, (self.frame_width, self.frame_height))
-        self.out_detect = cv2.VideoWriter('cache/detect.avi', cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), 30, (self.frame_width, self.frame_height))
+        self.outOriginal = cv2.VideoWriter('cache/original.avi', cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), 24, (self.frameWidth, self.frameHeight))
+        self.outDetect = cv2.VideoWriter('cache/detect.avi', cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), 24, (self.frameWidth, self.frameHeight))
 
         self.fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 
-        while True :
+        self.frameCount = 0
+
+        while self.frameCount < 1440 :
 
             status, frame = self.cap.read()
 
@@ -62,13 +64,15 @@ class busyThread(QObject) :
 
             fgmask = self.fgbg.apply(frame)
             
-            self.out_original.write(frame)
-            self.out_detect.write(cv2.merge([fgmask, fgmask, fgmask]))
+            self.outOriginal.write(frame)
+            self.outDetect.write(cv2.merge([fgmask, fgmask, fgmask]))
+
+            self.frameCount += 1
 
         print("processing done!")
         self.cap.release()
-        self.out_detect.release()
-        self.out_original.release()
+        self.outDetect.release()
+        self.outOriginal.release()
     ########################
         self.threadCompleted.emit()
         # print("done")
