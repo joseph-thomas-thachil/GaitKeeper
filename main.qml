@@ -10,67 +10,153 @@ ApplicationWindow {
     height: 1080
     visibility: Window.FullScreen
     title: qsTr("GaitKeeper")
-    color: "#454545"
+    color: "#002b36"
 
-    Image {
+    Rectangle {
         id: gaitframe
         x: 66
         y: 49
         width: 1049
         height: 330
-        fillMode: Image.Tile
-        source: "images/gaitBG.png"
+        color: "#00000000"
+        border.color: "#00afaf"
+        border.width: 5
+        Frame {
+            padding: 5
+            anchors.fill: parent
+            Image {
+                anchors.fill: parent
+                fillMode: Image.Tile
+                source: "images/gaitBG.png"
+            }
+        }
     }
 
+    Timer {
+        id: busytimer
+        interval: 1
+        onTriggered: {
+            videoanalyze.process()
+            busyIndicator.visible = false
+            detectvideo.source="cache/detect.avi"
+            originalvideo.source="cache/original.avi"
+        }
+    }
 
-    Video {
+    Button {
+        id: control
+        x: 1440
+        y: 49
+        text: qsTr("START")
+        background: Rectangle {
+            implicitWidth: 423
+            implicitHeight: 48
+            opacity: enabled ? 1 : 0.3
+            color: control.down ? "#cb4b16" : "#2aa198"
+        }
+
+        onClicked: {
+            busyIndicator.visible = true
+            videoanalyze.process()
+//            busyIndicator.visible = false
+//            detectvideo.source="cache/detect.avi"
+//            originalvideo.source="cache/original.avi"
+//            busytimer.start()
+        }
+    }
+
+    Rectangle {
         id: detectframe
         x: 66
         y: 426
         width: 1049
         height: 335
-        fillMode: 0
-        autoPlay: true
-        source: "cache/detect.avi"
-//        source: "qrc:/qtquickplugin/images/template_image.png"
+        color: "#00000000"
+        border.color: "#00afaf"
+        border.width: 5
+        Video {
+            id: detectvideo
+            anchors.fill: parent
+            fillMode: 0
+            autoPlay: true
+            source: ""
+        }
+
     }
 
-    Video {
+    Rectangle {
         id: originalframe
         x: 66
         y: 795
         width: 520
         height: 230
-        fillMode: 0
-        autoPlay: true
-        source: "cache/original.avi"
-//        source: "qrc:/qtquickplugin/images/template_image.png"
+        color: "#00000000"
+        border.color: "#00afaf"
+        border.width: 5
+        Video {
+            id: originalvideo
+            anchors.fill: parent
+            fillMode: 0
+            autoPlay: true
+            source: ""
+        }
+
     }
 
-    Image {
-        id: mugshot
+    Rectangle {
+        id: mugshotframe
         x: 745
         y: 795
         width: 272
         height: 230
-        source: "images/proBG.png"
+        color: "#00000000"
+        border.color: "#00afaf"
+        border.width: 5
+        Frame {
+            padding: 5
+            anchors.fill: parent
+            Image {
+                id: mugshot
+                anchors.fill: parent
+                source: "images/proBG.png"
+            }
+        }
     }
 
-    Label {
-        id: details
+    Rectangle {
+        id: detailsframe
         x: 1077
         y: 795
         width: 786
         height: 230
-        text: qsTr("Label")
+        color: "#00000000"
+        border.color: "#00afaf"
+        border.width: 5
+        Frame {
+            padding: 5
+            anchors.fill: parent
+            Label {
+                id: details
+                text: qsTr("Label")
+            }
+        }
     }
 
-//    Connections {
-//        target: videoanalyze
+    BusyIndicator {
+        id: busyIndicator
+        x: 1791
+        y: 51
+        width: 72
+        height: 44
+        visible: false
+    }
 
-//        onProcessCompleted: {
-//            originalframe.source="cache/original.avi"
-//            detectframe.source="cache/detect.avi"
-//        }
-//    }
+    Connections {
+        target: videoanalyze
+        onProcessCompleted: {
+            busyIndicator.visible=false
+            detectvideo.source="cache/detect.avi"
+            originalvideo.source="cache/original.avi"
+        }
+    }
 }
