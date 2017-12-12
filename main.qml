@@ -10,7 +10,7 @@ ApplicationWindow {
     height: 1080
     visibility: Window.FullScreen
     title: qsTr("GaitKeeper")
-    color: "#002b36"
+    color: "#212121"
 
     Rectangle {
         id: gaitframe
@@ -19,7 +19,7 @@ ApplicationWindow {
         width: 1049
         height: 330
         color: "#00000000"
-        border.color: "#00afaf"
+        border.color: "#e65100"
         border.width: 5
         Frame {
             padding: 5
@@ -27,26 +27,37 @@ ApplicationWindow {
             Image {
                 anchors.fill: parent
                 fillMode: Image.Tile
-                source: "images/gaitBG.png"
+                source: "images/plot.png"
             }
         }
     }
 
     Button {
-        id: control
+        id: start
         x: 1440
         y: 49
-        text: qsTr("START")
+        contentItem: Text {
+            text: qsTr("START")
+            font.pointSize: 16
+            opacity: enabled ? 1.0 : 0.3
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
         background: Rectangle {
             implicitWidth: 423
             implicitHeight: 48
             opacity: enabled ? 1 : 0.3
-            color: control.down ? "#cb4b16" : "#2aa198"
+            color: start.down ? "#757575" : "#9e9e9e"
         }
 
         onClicked: {
             busyIndicator.visible = true
             progressBar.visible = true
+            detectvideo.source = ""
+            originalvideo.source = ""
+            progressBar.value = 0.0
+            start.down = true
             videoanalyze.process()
         }
     }
@@ -58,7 +69,7 @@ ApplicationWindow {
         width: 1049
         height: 335
         color: "#00000000"
-        border.color: "#00afaf"
+        border.color: "#e65100"
         border.width: 5
         Video {
             id: detectvideo
@@ -77,7 +88,7 @@ ApplicationWindow {
         width: 520
         height: 230
         color: "#00000000"
-        border.color: "#00afaf"
+        border.color: "#e65100"
         border.width: 5
         Video {
             id: originalvideo
@@ -96,7 +107,7 @@ ApplicationWindow {
         width: 272
         height: 230
         color: "#00000000"
-        border.color: "#00afaf"
+        border.color: "#e65100"
         border.width: 5
         Frame {
             padding: 5
@@ -104,7 +115,7 @@ ApplicationWindow {
             Image {
                 id: mugshot
                 anchors.fill: parent
-                source: "images/proBG.png"
+                source: "images/avatar.png"
             }
         }
     }
@@ -116,7 +127,7 @@ ApplicationWindow {
         width: 786
         height: 230
         color: "#00000000"
-        border.color: "#00afaf"
+        border.color: "#e65100"
         border.width: 5
         Frame {
             padding: 5
@@ -128,23 +139,31 @@ ApplicationWindow {
         }
     }
 
-    BusyIndicator {
-        id: busyIndicator
-        x: 1791
-        y: 51
-        width: 72
-        height: 44
-        visible: false
-    }
-
     ProgressBar {
         id: progressBar
-        x: 1440
-        y: 95
-        width: 423
-        height: 64
         value: 0.0
+        padding: 2
+        x: 1440
+        y: 105
         visible: false
+        background: Rectangle {
+            implicitWidth: 423
+            implicitHeight: 9
+            color: "#00000000"
+            radius: 3
+        }
+
+        contentItem: Item {
+            implicitWidth: 200
+            implicitHeight: 4
+
+            Rectangle {
+                width: progressBar.visualPosition * parent.width
+                height: parent.height
+                radius: 2
+                color: "#e65100"
+            }
+        }
     }
 
     Connections {
@@ -157,6 +176,7 @@ ApplicationWindow {
         onProcessCompleted: {
             busyIndicator.visible=false
             progressBar.visible=false
+            start.down = false
             detectvideo.source="cache/detect.avi"
             originalvideo.source="cache/original.avi"
         }
