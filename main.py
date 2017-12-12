@@ -14,6 +14,7 @@ class processWindow(QObject) :
         QObject.__init__(self)
 
     processCompleted = pyqtSignal(int, arguments=['done'])
+    processStatus = pyqtSignal(int, arguments=['val'])
     
     @pyqtSlot()
     def process(self) :
@@ -21,6 +22,8 @@ class processWindow(QObject) :
         self.busy = busyThread()
         self.thread = QThread(self)
         self.busy.threadCompleted.connect(self.done)
+
+        self.busy.frameProgress.connect(self.progress)
         self.busy.moveToThread(self.thread)
         self.thread.started.connect(self.busy.do_work)
         self.thread.start()
@@ -28,6 +31,9 @@ class processWindow(QObject) :
         # self.ProcessCompleted.connect(self.busy, SIGNAL("signal"), self.done)
         # self.busy.start()
 
+    def progress(self, percent) :
+
+        self.processStatus.emit(percent)
     
     def done(self) :
         self.processCompleted.emit(1)
@@ -38,7 +44,8 @@ class busyThread(QObject) :
         QObject.__init__(self)
 
     threadCompleted = pyqtSignal()
-    
+    frameProgress = pyqtSignal(int)
+
     @pyqtSlot()
     def do_work(self) :
         # vid = vprocess("souces/gait.mp4")
@@ -55,7 +62,7 @@ class busyThread(QObject) :
 
         self.frameCount = 0
 
-        while self.frameCount < 1440 :
+        while self.frameCount < 240 :
 
             status, frame = self.cap.read()
 
@@ -69,6 +76,9 @@ class busyThread(QObject) :
 
             self.frameCount += 1
 
+            if self.frameCount % 10 == 0 : 
+                self.trackProgress(self.frameCount/240)
+
         print("processing done!")
         self.cap.release()
         self.outDetect.release()
@@ -78,6 +88,8 @@ class busyThread(QObject) :
         # print("done")
         # self.emit(SIGNAL("signal"),"completed")
 
+    def trackProgress(self, percent) :
+        self.frameProgress.emit(int(percent*100))
 
 # Main Function
 if __name__ == '__main__':

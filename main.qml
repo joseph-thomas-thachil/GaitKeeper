@@ -32,17 +32,6 @@ ApplicationWindow {
         }
     }
 
-    Timer {
-        id: busytimer
-        interval: 1
-        onTriggered: {
-            videoanalyze.process()
-            busyIndicator.visible = false
-            detectvideo.source="cache/detect.avi"
-            originalvideo.source="cache/original.avi"
-        }
-    }
-
     Button {
         id: control
         x: 1440
@@ -57,11 +46,8 @@ ApplicationWindow {
 
         onClicked: {
             busyIndicator.visible = true
+            progressBar.visible = true
             videoanalyze.process()
-//            busyIndicator.visible = false
-//            detectvideo.source="cache/detect.avi"
-//            originalvideo.source="cache/original.avi"
-//            busytimer.start()
         }
     }
 
@@ -151,12 +137,29 @@ ApplicationWindow {
         visible: false
     }
 
+    ProgressBar {
+        id: progressBar
+        x: 1440
+        y: 95
+        width: 423
+        height: 64
+        value: 0.0
+        visible: false
+    }
+
     Connections {
         target: videoanalyze
+
+        onProcessStatus: {
+            progressBar.value=val/100
+        }
+
         onProcessCompleted: {
             busyIndicator.visible=false
+            progressBar.visible=false
             detectvideo.source="cache/detect.avi"
             originalvideo.source="cache/original.avi"
         }
     }
+
 }
