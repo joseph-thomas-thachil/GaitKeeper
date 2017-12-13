@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
  
-img = cv2.imread('person_010.bmp',0)
+img = cv2.imread('ori.png',0)
 size = np.size(img)
 skel = np.zeros(img.shape,np.uint8)
  
