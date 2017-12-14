@@ -6,8 +6,8 @@ import QtMultimedia 5.9
 
 ApplicationWindow {
     visible: true
-    width: 1920
-    height: 1080
+    width: 1366
+    height: 768
     visibility: Window.FullScreen
     title: qsTr("GaitKeeper")
     color: "#212121"
