@@ -15,9 +15,9 @@ ApplicationWindow {
     Rectangle {
         id: gaitframe
         x: 66
-        y: 49
-        width: 1049
-        height: 330
+        y: 29
+        width: 549
+        height: 230
         color: "#00000000"
         border.color: "#e65100"
         border.width: 5
@@ -34,8 +34,8 @@ ApplicationWindow {
 
     Button {
         id: start
-        x: 1440
-        y: 49
+        x: 1079
+        y: 29
         contentItem: Text {
             text: qsTr("START")
             font.pointSize: 16
@@ -45,7 +45,7 @@ ApplicationWindow {
             elide: Text.ElideRight
         }
         background: Rectangle {
-            implicitWidth: 423
+            implicitWidth: 223
             implicitHeight: 48
             opacity: enabled ? 1 : 0.3
             color: start.down ? "#757575" : "#9e9e9e"
@@ -63,7 +63,7 @@ ApplicationWindow {
 
     Button {
         id: clearCache
-        x: 1440
+        x: 1079
         y: 220
         contentItem: Text {
             text: qsTr("CLEAR CACHE")
@@ -74,7 +74,7 @@ ApplicationWindow {
             elide: Text.ElideRight
         }
         background: Rectangle {
-            implicitWidth: 423
+            implicitWidth: 223
             implicitHeight: 48
             opacity: enabled ? 1: 0.3
             color: clearCache.down ? "#757575" : "#9e9e9e"
@@ -84,9 +84,9 @@ ApplicationWindow {
     Rectangle {
         id: detectframe
         x: 66
-        y: 426
-        width: 1049
-        height: 335
+        y: 289
+        width: 549
+        height: 230
         color: "#00000000"
         border.color: "#e65100"
         border.width: 5
@@ -103,9 +103,9 @@ ApplicationWindow {
     Rectangle {
         id: originalframe
         x: 66
-        y: 795
-        width: 520
-        height: 230
+        y: 549
+        width: 320
+        height: 180
         color: "#00000000"
         border.color: "#e65100"
         border.width: 5
@@ -121,10 +121,10 @@ ApplicationWindow {
 
     Rectangle {
         id: mugshotframe
-        x: 745
-        y: 795
-        width: 272
-        height: 230
+        x: 445
+        y: 549
+        width: 230
+        height: 180
         color: "#00000000"
         border.color: "#e65100"
         border.width: 5
@@ -141,10 +141,10 @@ ApplicationWindow {
 
     Rectangle {
         id: detailsframe
-        x: 1077
-        y: 795
-        width: 786
-        height: 230
+        x: 697
+        y: 549
+        width: 486
+        height: 180
         color: "#00000000"
         border.color: "#e65100"
         border.width: 5
@@ -162,11 +162,11 @@ ApplicationWindow {
         id: progressBar
         value: 0.0
         padding: 2
-        x: 1440
-        y: 105
+        x: 1079
+        y: 95
         visible: false
         background: Rectangle {
-            implicitWidth: 423
+            implicitWidth: 223
             implicitHeight: 9
             color: "#00000000"
             radius: 3
