@@ -29,6 +29,7 @@ sources/
 cache/
 *.pro
 *.pro.user
+*.qmlc
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
