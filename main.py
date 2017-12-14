@@ -51,7 +51,13 @@ class busyThread(QObject) :
         # vid = vprocess("souces/gait.mp4")
 
     ########################
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture("sources/walk_sample.mp4")
+
+        self.hog = cv2.HOGDescriptor()
+        self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+
+        # self.surf = cv2.xfeatures2d.SURF_create(5000)
+
         self.frameWidth = int(self.cap.get(3))
         self.frameHeight = int(self.cap.get(4))
 
@@ -70,6 +76,16 @@ class busyThread(QObject) :
                 break
 
             fgmask = self.fgbg.apply(frame)
+
+            # kp, des = self.surf.detectAndCompute(frame, None)
+            # print(len(kp))
+            # keyFrame = cv2.drawKeypoints(frame, kp, None, (255, 0, 0), 4)
+            # found,w = self.hog.detectMultiScale(frame, winStride=(8,8), padding=(32,32), scale=1.05)
+            # for x, y, w, h in found:
+                # pad_w, pad_h = int(0.15*w), int(0.05*h)
+                # cv2.rectangle(frame, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), 1)
+
+            # self.draw_detections(fgmask,found)
             
             self.outOriginal.write(frame)
             self.outDetect.write(cv2.merge([fgmask, fgmask, fgmask]))
@@ -87,6 +103,12 @@ class busyThread(QObject) :
         self.threadCompleted.emit()
         # print("done")
         # self.emit(SIGNAL("signal"),"completed")
+
+    def draw_detections(img, rects, thickness = 1):
+        for x, y, w, h in rects:
+            pad_w, pad_h = int(0.15*w), int(0.05*h)
+            cv2.rectangle(img, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), thickness)
+
 
     def trackProgress(self, percent) :
         self.frameProgress.emit(int(percent*100))
