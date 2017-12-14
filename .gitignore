@@ -26,6 +26,7 @@ wheels/
 *.egg
 images/
 sources/
+sample/
 cache/
 *.pro
 *.pro.user
