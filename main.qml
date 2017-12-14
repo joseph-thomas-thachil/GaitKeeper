@@ -52,13 +52,32 @@ ApplicationWindow {
         }
 
         onClicked: {
-            busyIndicator.visible = true
             progressBar.visible = true
             detectvideo.source = ""
             originalvideo.source = ""
             progressBar.value = 0.0
             start.down = true
             videoanalyze.process()
+        }
+    }
+
+    Button {
+        id: clearCache
+        x: 1440
+        y: 220
+        contentItem: Text {
+            text: qsTr("CLEAR CACHE")
+            font.pointSize: 16
+            opacity: enabled ? 1.0 : 0.3
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+        background: Rectangle {
+            implicitWidth: 423
+            implicitHeight: 48
+            opacity: enabled ? 1: 0.3
+            color: clearCache.down ? "#757575" : "#9e9e9e"
         }
     }
 
@@ -174,7 +193,6 @@ ApplicationWindow {
         }
 
         onProcessCompleted: {
-            busyIndicator.visible=false
             progressBar.visible=false
             start.down = false
             detectvideo.source="cache/detect.avi"
