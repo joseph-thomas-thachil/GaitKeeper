@@ -87,6 +87,7 @@ class busyThread(QObject) :
 
         self.fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 
+
         self.frameCount = 0
 
         while self.frameCount < 240 :
@@ -95,25 +96,28 @@ class busyThread(QObject) :
 
             if not status :
                 break
-           
-            blur = cv2.GaussianBlur(frame, (5, 5), 0)
-            fgmask = self.fgbg.apply(blur)
-            # kp, des = self.surf.detectAndCompute(frame, None)
-            # keyFrame = cv2.drawKeypoints(frame, kp, None, (255, 0, 0), 4)
-            # found,w = self.hog.detectMultiScale(frame, winStride=(8,8), padding=(32,32), scale=1.05)
-            # for x, y, w, h in found:
-                # pad_w, pad_h = int(0.15*w), int(0.05*h)
-                # cv2.rectangle(frame, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), 1)
 
-            # self.draw_detections(fgmask,found)
-            # erode = cv2.erode(fgmask, self.kernel, iterations=3)
-            skel = self.skeltonize(fgmask)
-            edges = cv2.Canny(skel, 50, 150, apertureSize=3)
-            # hough = self.houghTransform(edges)
+            blur = cv2.GaussianBlur(frame, (9, 9), 0)
+            fgmask = self.fgbg.apply(blur)
+
+            img = cv2.dilate(fgmask,self.kernel,iterations = 1)
+
+            skel = self.skeltonize(img)
+
+            x, y, height, length = self.contourDetect(img)
+            print("height: ", height, ", stride: ", length, ", lowerbody: ", round(0.53 * height, 2), ", upperbody: ", round(0.4 * height, 2))
+            boxImg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+            boxImg = cv2.rectangle(boxImg, (x, y), (x + length, y + height), (0, 0, 255), 2)
+            cv2.line(boxImg, (0, int(y + 0.39 * height)), (640, int(y + 0.39 * height)), (0, 255, 0), 2)
+            cv2.line(boxImg, (0, int(y + 0.15 * height)), (640, int(y + 0.15 * height)), (255, 0, 0), 2)
+
+            skel1 = self.skelRegion(img, x, y, height, length)
+
+            skel = cv2.cvtColor(skel, cv2.COLOR_GRAY2BGR)
             self.outOriginal.write(frame)
-            self.outDetect.write(cv2.merge([fgmask, fgmask, fgmask]))
-            self.outSkel.write(cv2.merge([edges, edges, edges]))
-            # self.outDetect.write(blur)
+
+            self.outDetect.write(boxImg)
+            self.outSkel.write(skel1)            
 
             self.frameCount += 1
 
@@ -130,11 +134,6 @@ class busyThread(QObject) :
         # print("done")
         # self.emit(SIGNAL("signal"),"completed")
 
-    def draw_detections(img, rects, thickness = 1):
-        for x, y, w, h in rects:
-            pad_w, pad_h = int(0.15*w), int(0.05*h)
-            cv2.rectangle(img, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), thickness)
-
 
     def trackProgress(self, percent) :
         self.frameProgress.emit(int(percent*100))
@@ -143,8 +142,8 @@ class busyThread(QObject) :
         size = np.size(img)
         skel = np.zeros(img.shape,np.uint8)
 
-        ret,img = cv2.threshold(img,127,255,0)
-        element = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
+        ret,img = cv2.threshold(img,127,255,cv2.THRESH_TOZERO)
+        element = cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))
         done = False
 
         while( not done):
@@ -160,24 +159,77 @@ class busyThread(QObject) :
 
         return skel
 
-    # def houghTransform(self, edges) :
-    #     lines = cv2.HoughLines(edges,1,np.pi/180,200)
-    #     print(lines[0])
-    #     if lines[0] :
-    #         for rho,theta in lines[0]:
-    #             a = np.cos(theta)
-    #             b = np.sin(theta)
-    #             x0 = a*rho
-    #             y0 = b*rho
-    #             x1 = int(x0 + 1000*(-b))
-    #             y1 = int(y0 + 1000*(a))
-    #             x2 = int(x0 - 1000*(-b))
-    #             y2 = int(y0 - 1000*(a))
+    def houghTransform(self, edges, frame) :
+        # lines = cv2.HoughLines(edges,1,np.pi/180,2)
+        lines = cv2.HoughLinesP(edges, 1, np.pi/180, 10, 50, 1)
+        # if  lines is not None:
+        #     if lines[0] is not None:
+        #         for rho,theta in lines[0]:
+        #             a = np.cos(theta)
+        #             b = np.sin(theta)
+        #             x0 = a*rho
+        #             y0 = b*rho
+        #             x1 = int(x0 + 1000*(-b))
+        #             y1 = int(y0 + 1000*(a))
+        #             x2 = int(x0 - 1000*(-b))
+        #             y2 = int(y0 - 1000*(a))
 
-    #             cv2.line(img,(x1,y1),(x2,y2),(0,0,255),2)
+        #             cv2.line(frame,(x1,y1),(x2,y2),(0,255,0),3)
+        if lines is not None :
+            for line in lines :
+                x1, y1, x2, y2 = line[0]
+                cv2.line(edges, (x1, y1), (x2, y2), (0, 0, 0), 2)
 
-    #     return img
+        return edges
 
+    def contourDetect(self, img) :
+
+        im2,contours,hierarchy = cv2.findContours(img, 1, 2)
+        x = y = h = w = 0
+        if len(contours) > 0 : 
+            # contours.pop()
+            cnt = max(contours, key=cv2.contourArea)
+
+            x,y,w,h = cv2.boundingRect(cnt)
+            # im2 = cv2.rectangle(im2,(x,y),(x+w,y+h),(255,255,255),2)
+            cv2.drawContours(im2, contours, -1, (255,255,255), 1)
+        return x, y, h, w
+
+    def skelRegion(self, img, x, y, h, w) :
+
+        xy = [0] * 10
+
+        xy[0], xy[1] = self.contourCenter(img, x, x + w, y, y + 5 )
+        
+        xy[2], xy[3] = self.contourCenter(img, x, x + w, int(y + 0.15 * h), int(y + 5 + 0.15 * h))
+
+        xy[4], xy[5] = self.contourCenter(img, x, x + w, int(y + 0.39 * h), int(y + 5 + 0.39 * h))
+        
+        im3 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        cv2.circle(im3, (x + xy[0], y + xy[1]), 3, (0, 0, 255), -1)
+        cv2.circle(im3, (x + xy[2], y + xy[3] + int(0.15 * h)), 3, (0, 0, 255), -1)
+        cv2.line(im3, (x + xy[0], y + xy[1]), (x + xy[2], y + xy[3] + int(0.15 * h)), (255, 0, 0), 2)
+
+        cv2.circle(im3, (x + xy[4], y + xy[5] + int(0.39 * h)), 3, (0, 0, 255), -1)
+        cv2.line(im3, (x + xy[2], y + xy[3] + int(0.15 * h)), (x + xy[4], y + xy[5] + int(0.39 * h)), (255, 0, 0), 2)
+
+        print(xy[0], xy[1])
+        return im3
+        
+    def contourCenter(self, img, x1, x2, y1, y2) :
+
+        c1 = img[y1:y2, x1:x2]
+        im2, contours, hierarchy = cv2.findContours(c1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        cx, cy = 0, 0
+
+        if len(contours) > 0 :
+            cnt = max(contours, key=cv2.contourArea)
+            M = cv2.moments(cnt)
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+
+        return cx, cy 
 
 class cacheThread(QObject) :
     def __init__(self) :
