@@ -83,6 +83,18 @@ ApplicationWindow {
         source: ""
     }
 
+    Label {
+        id: skeldef
+        anchors.fill: skelvideo
+        color: "#b3e5fc"
+        text: qsTr("No preview Available")
+        font.family: customFont.name
+        font.pointSize: 16
+        fontSizeMode: Text.Fit
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+    }
+
     Rectangle {
         id: detectblock
         color: "#01579b"
@@ -116,6 +128,19 @@ ApplicationWindow {
         fillMode: 0
         autoPlay: true
         source: ""
+    }
+
+
+    Label {
+        id: detectdef
+        anchors.fill: detectvideo
+        color: "#b3e5fc"
+        text: qsTr("No preview Available")
+        font.family: customFont.name
+        font.pointSize: 16
+        fontSizeMode: Text.Fit
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
     }
 
     Rectangle {
@@ -170,6 +195,19 @@ ApplicationWindow {
         source: ""
     }
 
+
+    Label {
+        id: originaldef
+        anchors.fill: originalvideo
+        color: "#b3e5fc"
+        text: qsTr("No preview Available")
+        font.family: customFont.name
+        font.pointSize: 16
+        fontSizeMode: Text.Fit
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+    }
+
     Rectangle {
         id: originalside
         color: "#01579b"
@@ -198,6 +236,7 @@ ApplicationWindow {
         anchors.rightMargin: 30
         contentItem: Text {
             text: qsTr("START")
+            fontSizeMode: Text.Fit
             id: starttext
             font.family: customFont.name
             color: "#01579b"
@@ -219,7 +258,8 @@ ApplicationWindow {
             originalvideo.source = ""
             skelvideo.source = ""
             progressBar.value = 0.0
-            start.down = true
+            start.enabled = false
+            clearCache.enabled = false
             videoanalyze.process()
         }
 
@@ -247,6 +287,7 @@ ApplicationWindow {
             anchors.topMargin: 40
             contentItem: Text {
                 text: qsTr("CLEAR CACHE")
+                fontSizeMode: Text.Fit
                 id: cachetext
                 font.family: customFont.name
                 color: "#01579b"
@@ -263,7 +304,8 @@ ApplicationWindow {
             }
 
             onClicked: {
-                clearCache.down = true
+                clearCache.enabled = false
+                start.enabled = false
                 videoanalyze.clearprocess()
             }
 
@@ -336,8 +378,21 @@ ApplicationWindow {
             Image {
                 id: mugshot
                 anchors.fill: parent
-                source: "images/avatar.png"
+                source: ""
             }
+        }
+
+
+        Label {
+            id: mugshotdef
+            anchors.fill: mugshotframe
+            color: "#b3e5fc"
+            text: qsTr("No preview Available")
+            font.family: customFont.name
+            font.pointSize: 16
+            fontSizeMode: Text.Fit
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
 
         Rectangle {
@@ -391,8 +446,21 @@ ApplicationWindow {
             Image {
                 id: details
                 anchors.fill: parent
-                source: "images/document.png"
+                source: ""
             }
+        }
+
+
+        Label {
+            id: detailsdef
+            anchors.fill: detailsframe
+            color: "#b3e5fc"
+            text: qsTr("No preview Available")
+            font.family: customFont.name
+            font.pointSize: 16
+            fontSizeMode: Text.Fit
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
 
         Rectangle {
@@ -451,14 +519,19 @@ ApplicationWindow {
 
         onProcessCompleted: {
             progressBar.visible=false
-            start.down = false
+            start.enabled = true
+            clearCache.enabled = true
             detectvideo.source="cache/detect.avi"
             originalvideo.source="cache/original.avi"
             skelvideo.source="cache/skel.avi"
+            skelvideo.z = 1
+            detectvideo.z = 1
+            originalvideo.z = 1
         }
 
         onCacheCompleted: {
-            clearCache.down = false
+            clearCache.enabled = true
+            start.enabled = true
             cacheText.visible = true
             cacheTimer.start()
         }
