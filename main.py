@@ -1,6 +1,5 @@
 import sys
 import os
-# from videoprocess import *
 import cv2
 import numpy as np
 from PyQt5.QtGui import QImage
@@ -76,7 +75,7 @@ class busyThread(QObject) :
         self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
         # self.surf = cv2.xfeatures2d.SURF_create(5000)
-        self.kernel = np.ones((5, 5), np.uint8)
+        self.kernel = np.ones((3, 3), np.uint8)
 
         self.frameWidth = int(self.cap.get(3))
         self.frameHeight = int(self.cap.get(4))
@@ -105,19 +104,21 @@ class busyThread(QObject) :
             skel = self.skeltonize(img)
 
             x, y, height, length = self.contourDetect(img)
-            print("height: ", height, ", stride: ", length, ", lowerbody: ", round(0.53 * height, 2), ", upperbody: ", round(0.4 * height, 2))
             boxImg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
             boxImg = cv2.rectangle(boxImg, (x, y), (x + length, y + height), (0, 0, 255), 2)
-            cv2.line(boxImg, (0, int(y + 0.39 * height)), (640, int(y + 0.39 * height)), (0, 255, 0), 2)
-            cv2.line(boxImg, (0, int(y + 0.15 * height)), (640, int(y + 0.15 * height)), (255, 0, 0), 2)
+            cv2.line(boxImg, (0, int(y + 0.75 * height)), (640, int(y + 0.75 * height)), (0, 255, 0), 2)
+            cv2.line(boxImg, (0, int(y + height)), (640, int(y + height)), (255, 0, 0), 2)
 
-            skel1 = self.skelRegion(img, x, y, height, length)
+            skel, hip, shoulder = self.skelRegion(img, x, y, height, length)
 
-            skel = cv2.cvtColor(skel, cv2.COLOR_GRAY2BGR)
+            # skel = cv2.cvtColor(skel, cv2.COLOR_GRAY2BGR)
+
+            print("height: ", height, ", stride: ", length, ", lowerbody: ", round(0.53 * height, 2), ", upperbody: ", round(0.4 * height, 2), ", hipAngle: ", round(hip, 2), ", shoulder: ", shoulder)
+
             self.outOriginal.write(frame)
 
             self.outDetect.write(boxImg)
-            self.outSkel.write(skel1)            
+            self.outSkel.write(skel)            
 
             self.frameCount += 1
 
@@ -203,33 +204,100 @@ class busyThread(QObject) :
         
         xy[2], xy[3] = self.contourCenter(img, x, x + w, int(y + 0.15 * h), int(y + 5 + 0.15 * h))
 
-        xy[4], xy[5] = self.contourCenter(img, x, x + w, int(y + 0.39 * h), int(y + 5 + 0.39 * h))
-        
+        xy[4], xy[5] = self.contourCenter(img, x, x + w, int(y + 0.47 * h), int(y + 5 + 0.47 * h))
+
+        xy[6], xy[7], xy[8], xy[9] = self.contourCenter(img, x, x + w, int(y + 0.66 * h), int(y + 0.74 * h), True)
+
+        exl, exr, ext, exb = self.footRegion(img, x, x+w, int(y + 0.66 * h), y + h)
         im3 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         cv2.circle(im3, (x + xy[0], y + xy[1]), 3, (0, 0, 255), -1)
         cv2.circle(im3, (x + xy[2], y + xy[3] + int(0.15 * h)), 3, (0, 0, 255), -1)
         cv2.line(im3, (x + xy[0], y + xy[1]), (x + xy[2], y + xy[3] + int(0.15 * h)), (255, 0, 0), 2)
+        shoulder = (x + xy[2], y + xy[3] + int(0.15 * h))
 
-        cv2.circle(im3, (x + xy[4], y + xy[5] + int(0.39 * h)), 3, (0, 0, 255), -1)
-        cv2.line(im3, (x + xy[2], y + xy[3] + int(0.15 * h)), (x + xy[4], y + xy[5] + int(0.39 * h)), (255, 0, 0), 2)
+        cv2.circle(im3, (x + xy[4], y + xy[5] + int(0.47 * h)), 3, (0, 0, 255), -1)
+        cv2.line(im3, (x + xy[2], y + xy[3] + int(0.15 * h)), (x + xy[4], y + xy[5] + int(0.47 * h)), (255, 0, 0), 2)
 
-        print(xy[0], xy[1])
-        return im3
+        cv2.circle(im3, (x + xy[6], y + xy[7] + int(0.66 * h)), 3, (0, 0, 255), -1)
+        cv2.line(im3, (x + xy[4], y + xy[5] + int(0.47 * h)), (x + xy[6], y + xy[7] + int(0.66 * h)), (255, 0, 0), 2)
+
+        hipAng = 0
+        if x + xy[6] - (x + xy[4]) != 0 :
+            hipAng = (y + xy[7] + int(0.66 * h) - (y + xy[5] + int(0.47 * h))) / (x + xy[6] - (x + xy[4]))
+        # print("Hip: ", round(hipAng, 2))
+
+        if xy[8] != 0 and xy[9] != 0 :
+            cv2.circle(im3, (x + xy[8], y + xy[9] + int(0.66 * h)), 3, (0, 0, 255), -1)
+            cv2.line(im3, (x + xy[4], y + xy[5] + int(0.47 * h)), (x + xy[8], y + xy[9] + int(0.66 * h)), (255, 0, 0), 2)
+
+        if len(exl) > 0 and len(exr) > 0 and len(ext) > 0 and len(exb) > 0 :
+            cv2.circle(im3, (x + exl[0], y + exl[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
+            cv2.circle(im3, (x + exr[0], y + exr[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
+            cv2.circle(im3, (x + ext[0], y + ext[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
+            cv2.circle(im3, (x + exb[0], y + exb[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
         
-    def contourCenter(self, img, x1, x2, y1, y2) :
+        return im3, hipAng, shoulder
+        
+    def contourCenter(self, img, x1, x2, y1, y2, multiple=False) :
 
         c1 = img[y1:y2, x1:x2]
         im2, contours, hierarchy = cv2.findContours(c1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         cx, cy = 0, 0
-
+        cx1 = cy1 = cx2 = cy2 = 0
         if len(contours) > 0 :
+            if len(contours) > 1 and multiple == True :
+                cnt = contours[0]
+                M = cv2.moments(cnt)
+                if M["m00"] != 0 :
+                    cx1 = int(M["m10"] / M["m00"])
+                    cy1 = int(M["m01"] / M["m00"])
+                cnt = contours[1]
+                M = cv2.moments(cnt)
+                if M["m00"] != 0 :
+                    cx2 = int(M["m10"] / M["m00"])
+                    cy2 = int(M["m01"] / M["m00"])
+                # return cx1, cy1, cx2, cy2
+                return cx1, cy1, cx2, cy2
             cnt = max(contours, key=cv2.contourArea)
             M = cv2.moments(cnt)
-            cx = int(M["m10"] / M["m00"])
-            cy = int(M["m01"] / M["m00"])
+            if M["m00"] != 0 :
+                cx = int(M["m10"] / M["m00"])
+                cy = int(M["m01"] / M["m00"])
 
+        if multiple == True :
+            return cx, cy, cx2, cy2
         return cx, cy 
+
+    def footRegion(self, img, x1, x2, y1, y2) :
+        c1 = img[y1:y2, x1:x2]
+        im2, contours, hierarchy = cv2.findContours(c1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        extLeft = extRight = extTop = extBot = ()
+        if len(contours) > 0 :
+            c = contours[0]
+            extLeft = tuple(c[c[:, :, 0].argmin()][0])
+            extRight = tuple(c[c[:, :, 0].argmax()][0])
+            extTop = tuple(c[c[:, :, 1].argmin()][0])
+            extBot = tuple(c[c[:, :, 1].argmax()][0])
+        return extLeft, extRight, extTop, extBot
+
+    def processDatabase(self, host, user, password, database) :
+        
+        db = PyMySQL.connect(host, user, password, database)
+        cursor = db.cursor()
+
+        query = """CREATE TABLE [IF NOT EXISTS] gaituser(
+        id CHAR(20) NOT NULL,
+        name CHAR(20) NOT NULL,
+        position CHAR(50) NOT NULL,
+        clearance INT NOT NULL,
+        image LONGBLOB NOT NULL,
+        PRIMARY KEY(id)
+        )"""
+
+        cursor.execute(query)
+
 
 class cacheThread(QObject) :
     def __init__(self) :
