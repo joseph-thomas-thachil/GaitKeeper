@@ -1,6 +1,8 @@
 import sys
 import os
 import cv2
+import csv
+from functools import partial
 import numpy as np
 from PyQt5.QtGui import QImage
 from PyQt5.QtCore import QUrl, QObject, pyqtSignal, pyqtSlot, QThread
@@ -18,8 +20,8 @@ class processWindow(QObject) :
 
     cacheCompleted = pyqtSignal(int, arguments=['cval'])
     
-    @pyqtSlot()
-    def process(self) :
+    @pyqtSlot(bool, int)
+    def process(self, train=False, uid=0) :
         # vid = vprocess("sources/sample.mp4")
         self.busy = busyThread()
         self.thread = QThread(self)
@@ -28,7 +30,7 @@ class processWindow(QObject) :
         self.busy.frameProgress.connect(self.progress)
 
         self.busy.moveToThread(self.thread)
-        self.thread.started.connect(self.busy.do_work)
+        self.thread.started.connect(partial(self.busy.do_work, train, uid))
         self.thread.start()
         # self.busy.finished.connect(self.done)
         # self.ProcessCompleted.connect(self.busy, SIGNAL("signal"), self.done)
@@ -65,7 +67,7 @@ class busyThread(QObject) :
 
 
     @pyqtSlot()
-    def do_work(self) :
+    def do_work(self, train, uid) :
         # vid = vprocess("souces/gait.mp4")
 
     ########################
@@ -113,6 +115,20 @@ class busyThread(QObject) :
 
             # skel = cv2.cvtColor(skel, cv2.COLOR_GRAY2BGR)
 
+            print(train, uid)
+            if train :
+                with open('cache/' + str(uid) + '.csv', 'a', newline = '') as csvfile :
+                    fieldnames = ['height', 'stride', 'lowerbody', 'upperbody', 'hipangle', 'shoulderx', 'shouldery']
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                    writer.writerow({'height': height, 'stride': length, 'lowerbody': round(0.53 * height, 2), 'upperbody': round(0.4 * height, 2), 'hipangle': round(hip, 2), 'shoulderx': shoulder[0], 'shouldery': shoulder[1]})
+            else :
+                with open('cache/test.csv', 'a', newline = '') as csvfile :
+                    fieldnames = ['height', 'stride', 'lowerbody', 'upperbody', 'hipangle', 'shoulderx', 'shouldery']
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                    writer.writerow({'height': height, 'stride': length, 'lowerbody': round(0.53 * height, 2), 'upperbody': round(0.4 * height, 2), 'hipangle': round(hip, 2), 'shoulderx': shoulder[0], 'shouldery': shoulder[1]})
+           
             print("height: ", height, ", stride: ", length, ", lowerbody: ", round(0.53 * height, 2), ", upperbody: ", round(0.4 * height, 2), ", hipAngle: ", round(hip, 2), ", shoulder: ", shoulder)
 
             self.outOriginal.write(frame)
@@ -282,7 +298,7 @@ class busyThread(QObject) :
             extBot = tuple(c[c[:, :, 1].argmax()][0])
         return extLeft, extRight, extTop, extBot
 
-    def processDatabase(self, host, user, password, database) :
+    def createDatabase(self, host, user, password, database) :
         
         db = PyMySQL.connect(host, user, password, database)
         cursor = db.cursor()
@@ -296,8 +312,28 @@ class busyThread(QObject) :
         PRIMARY KEY(id)
         )"""
 
-        cursor.execute(query)
+        cursor.execute(query) 
+    
+    @pyqtSlot()
+    def processDatabase(self, uid, uname, upos, uclr, uimg) :
 
+        HOSTNAME = "localhost"
+        USER = "gaitadmin"
+        PASSWORD = "gaitkeeper"
+        DATABASE = "gaitkeeper"
+
+        blob = open(uimg, 'rb').read()
+
+        self.createDatabase(HOSTNAME, USER, PASSWORD, DATABASE)
+
+        db = PyMySQL.connect(HOSTNAME, USER, PASSWORD, DATABASE)
+        cursor = db.cursor()
+        
+        query = ('INSERT INTO gaituser(id, name, position, clearance, image)',
+                'VALUES(' + uid + ', ' + uname + ', ' + upos + ', ' + uclr + ', ' + blob + ')'
+                )
+        
+        cursor.execute(query)
 
 class cacheThread(QObject) :
     def __init__(self) :
