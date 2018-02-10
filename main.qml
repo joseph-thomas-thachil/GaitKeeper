@@ -841,7 +841,8 @@ ApplicationWindow {
                         rprogressBar.value = 0.0
                         rstart.enabled = false
                         rclearCache.enabled = false
-                        videoanalyze.process()
+                        videoanalyze.process(true, userid.text)
+                        console.log(userid.data)
                     }
                 }
 
