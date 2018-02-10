@@ -20,6 +20,8 @@ class processWindow(QObject) :
     processStatus = pyqtSignal(int, arguments=['val'])
 
     cacheCompleted = pyqtSignal(int, arguments=['cval'])
+
+    dbError = pyqtSignal(int, arguments=['errstat'])
     
     @pyqtSlot(bool, int)
     def process(self, train=False, uid=0) :
@@ -88,9 +90,15 @@ class processWindow(QObject) :
         
         query = """INSERT INTO gaituser(id, name, position, clearance, image) VALUES(%s, %s, %s, %s, %s)"""
         
-        cursor.execute(query, (uid, uname, upos, uclr, blob))
+        try :
+            cursor.execute(query, (uid, uname, upos, uclr, blob))
 
-        db.commit()
+            db.commit()
+        except Exception as e :
+            self.dbError.emit(1)
+        else :
+            self.dbError.emit(0)
+
         db.close()
 
 
