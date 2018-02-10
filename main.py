@@ -2,6 +2,7 @@ import sys
 import os
 import cv2
 import csv
+import pymysql
 from functools import partial
 import numpy as np
 from PyQt5.QtGui import QImage
@@ -56,6 +57,41 @@ class processWindow(QObject) :
 
     def clear(self) :
         self.cacheCompleted.emit(1)
+
+    def createDatabase(self, host, user, password, database) :
+        
+        db = pymysql.connect(host, user, password, database)
+        cursor = db.cursor()
+
+        query = """CREATE TABLE IF NOT EXISTS gaituser(id CHAR(20) NOT NULL, name CHAR(20) NOT NULL, position CHAR(50) NOT NULL, clearance INT NOT NULL, image LONGBLOB NOT NULL, PRIMARY KEY(id))"""
+
+        cursor.execute(query) 
+
+        db.close()
+    
+    @pyqtSlot(int, str, str, str, str)
+    def processDatabase(self, uid, uname, upos, uclr, uimg) :
+
+        HOSTNAME = "localhost"
+        USER = "gaitadmin"
+        PASSWORD = "gaitkeeper"
+        DATABASE = "gaitkeeper"
+
+        uimg = uimg.split(':')[1]
+
+        blob = open(uimg, 'rb').read()
+
+        self.createDatabase(HOSTNAME, USER, PASSWORD, DATABASE)
+
+        db = pymysql.connect(HOSTNAME, USER, PASSWORD, DATABASE)
+        cursor = db.cursor()
+        
+        query = """INSERT INTO gaituser(id, name, position, clearance, image) VALUES(%s, %s, %s, %s, %s)"""
+        
+        cursor.execute(query, (uid, uname, upos, uclr, blob))
+
+        db.commit()
+        db.close()
 
 
 class busyThread(QObject) :
@@ -115,7 +151,6 @@ class busyThread(QObject) :
 
             # skel = cv2.cvtColor(skel, cv2.COLOR_GRAY2BGR)
 
-            print(train, uid)
             if train :
                 with open('cache/' + str(uid) + '.csv', 'a', newline = '') as csvfile :
                     fieldnames = ['height', 'stride', 'lowerbody', 'upperbody', 'hipangle', 'shoulderx', 'shouldery']
@@ -129,7 +164,7 @@ class busyThread(QObject) :
 
                     writer.writerow({'height': height, 'stride': length, 'lowerbody': round(0.53 * height, 2), 'upperbody': round(0.4 * height, 2), 'hipangle': round(hip, 2), 'shoulderx': shoulder[0], 'shouldery': shoulder[1]})
            
-            print("height: ", height, ", stride: ", length, ", lowerbody: ", round(0.53 * height, 2), ", upperbody: ", round(0.4 * height, 2), ", hipAngle: ", round(hip, 2), ", shoulder: ", shoulder)
+            # print("height: ", height, ", stride: ", length, ", lowerbody: ", round(0.53 * height, 2), ", upperbody: ", round(0.4 * height, 2), ", hipAngle: ", round(hip, 2), ", shoulder: ", shoulder)
 
             self.outOriginal.write(frame)
 
@@ -297,43 +332,6 @@ class busyThread(QObject) :
             extTop = tuple(c[c[:, :, 1].argmin()][0])
             extBot = tuple(c[c[:, :, 1].argmax()][0])
         return extLeft, extRight, extTop, extBot
-
-    def createDatabase(self, host, user, password, database) :
-        
-        db = PyMySQL.connect(host, user, password, database)
-        cursor = db.cursor()
-
-        query = """CREATE TABLE [IF NOT EXISTS] gaituser(
-        id CHAR(20) NOT NULL,
-        name CHAR(20) NOT NULL,
-        position CHAR(50) NOT NULL,
-        clearance INT NOT NULL,
-        image LONGBLOB NOT NULL,
-        PRIMARY KEY(id)
-        )"""
-
-        cursor.execute(query) 
-    
-    @pyqtSlot()
-    def processDatabase(self, uid, uname, upos, uclr, uimg) :
-
-        HOSTNAME = "localhost"
-        USER = "gaitadmin"
-        PASSWORD = "gaitkeeper"
-        DATABASE = "gaitkeeper"
-
-        blob = open(uimg, 'rb').read()
-
-        self.createDatabase(HOSTNAME, USER, PASSWORD, DATABASE)
-
-        db = PyMySQL.connect(HOSTNAME, USER, PASSWORD, DATABASE)
-        cursor = db.cursor()
-        
-        query = ('INSERT INTO gaituser(id, name, position, clearance, image)',
-                'VALUES(' + uid + ', ' + uname + ', ' + upos + ', ' + uclr + ', ' + blob + ')'
-                )
-        
-        cursor.execute(query)
 
 class cacheThread(QObject) :
     def __init__(self) :
