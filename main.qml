@@ -842,7 +842,12 @@ ApplicationWindow {
                         rstart.enabled = false
                         rclearCache.enabled = false
                         videoanalyze.process(true, userid.text)
-                        console.log(userid.data)
+                        videoanalyze.processDatabase(userid.text, username.text, userpos.text, userclr.text, fileDialog.fileUrl)
+                    }
+                    else {
+                        rcacheText.text = "Fill ALL fields and then press START"
+                        rcacheText.visible = true
+                        rcacheTimer.start()
                     }
                 }
 
@@ -924,7 +929,7 @@ ApplicationWindow {
                 Timer {
                     id: rcacheTimer
                     interval: 5000
-                    onTriggered: rcacheText.visible=false
+                    onTriggered: (rcacheText.visible=false) && (rcacheText.text = "CACHE CLEARED!")
                 }
 
                 Text {
