@@ -834,14 +834,8 @@ ApplicationWindow {
 
                 onClicked: {
                     if ((userid.length > 0 ) && (username.length > 0) && (userpos.length > 0) && (userclr.length > 0) && (upimg.source != "")) {
-                        rprogressBar.visible = true
-                        rdetectvideo.source = ""
-                        roriginalvideo.source = ""
-                        rskelvideo.source = ""
-                        rprogressBar.value = 0.0
-                        rstart.enabled = false
-                        rclearCache.enabled = false
-                        videoanalyze.process(true, userid.text)
+
+
                         videoanalyze.processDatabase(userid.text, username.text, userpos.text, userclr.text, fileDialog.fileUrl)
                     }
                     else {
@@ -1296,6 +1290,30 @@ ApplicationWindow {
                     rstart.enabled = true
                     rcacheText.visible = true
                     rcacheTimer.start()
+                }
+
+                onDbError: {
+                    if(errstat == 0) {
+                        rprogressBar.visible = true
+                        rdetectvideo.source = ""
+                        roriginalvideo.source = ""
+                        rskelvideo.source = ""
+                        rprogressBar.value = 0.0
+                        rstart.enabled = false
+                        rclearCache.enabled = false
+                        videoanalyze.process(true, userid.text)
+                    }
+                    else {
+                        rcacheText.text = "UserID is already taken!"
+                        rcacheText.visible = true
+                        rcacheTimer.start()
+                        userid.text = ""
+                        username.text = ""
+                        userpos.text = ""
+                        userclr.text = ""
+                        upimg.source = ""
+                        imgdef.visible = true
+                    }
                 }
             }
         }
