@@ -30,6 +30,8 @@ class processWindow(QObject) :
 
     verifyCompleted = pyqtSignal(str, str, str, str, arguments=['id', 'name', 'pos', 'clr'])
     
+    unauthCheck = pyqtSignal(int, arguments=['unath'])
+
     @pyqtSlot(bool, int)
     def process(self, train=False, uid=0) :
         self.busy = busyThread()
@@ -39,6 +41,8 @@ class processWindow(QObject) :
         self.busy.frameProgress.connect(self.progress)
 
         self.busy.verifyDone.connect(self.verify)
+
+        self.busy.unauthVerify.connect(self.unauthorized)
 
         self.busy.moveToThread(self.thread)
         self.thread.started.connect(partial(self.busy.do_work, train, uid))
@@ -54,6 +58,9 @@ class processWindow(QObject) :
         self.busy.moveToThread(self.thread)
         self.thread.started.connect(self.busy.deleteCache)
         self.thread.start()
+
+    def unauthorized(self) :
+        self.unauthCheck.emit(1)
 
     def verify(self, uid, name, pos, clr) :
         
@@ -118,10 +125,11 @@ class busyThread(QObject) :
     threadCompleted = pyqtSignal()
     frameProgress = pyqtSignal(int)
     verifyDone = pyqtSignal(str, str, str, str)
+    unauthVerify = pyqtSignal()
 
     @pyqtSlot()
     def do_work(self, train, uid) :
-        self.cap = cv2.VideoCapture("sources/walk_sample.mp4")
+        self.cap = cv2.VideoCapture("sources/sample.mp4")
 
         self.kernel = np.ones((3, 3), np.uint8)
 
@@ -214,6 +222,8 @@ class busyThread(QObject) :
 
         ########################
 
+        verify = False
+
         #SVM Code here!!!
         if train :
             pass
@@ -288,7 +298,7 @@ class busyThread(QObject) :
                 # new_centers = np.concatenate((master_centers, cluster_centers))
                 LIMIT = np.matrix([[5, 5, 5, 5, 5, 5, 5]])
                 if abs(master_centers - cluster_centers).all() < LIMIT.all() :
-                    print("OK!!!")
+                    verify = True
                     uid = cfile.split('.')[0].split('/')[1]
                     data = self.fetchDatabase(uid)
                     img = open('cache/image.png', 'wb')
@@ -306,6 +316,9 @@ class busyThread(QObject) :
                     # print(uid)
             
         ########################
+        if not verify :
+            print("Working")
+            self.unauthVerify.emit()
         self.threadCompleted.emit()
 
     def fetchDatabase(self, uid) :
