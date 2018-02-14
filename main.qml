@@ -257,7 +257,7 @@ ApplicationWindow {
                     progressBar.value = 0.0
                     start.enabled = false
                     clearCache.enabled = false
-                    videoanalyze.process()
+                    videoanalyze.process(false, 0)
                 }
 
                 Glow {
@@ -1275,14 +1275,19 @@ ApplicationWindow {
 
                 onProcessCompleted: {
                     rprogressBar.visible=false
-                    rstart.enabled = true
-                    rclearCache.enabled = true
+//                    rstart.enabled = true
+//                    rclearCache.enabled = true
                     rdetectvideo.source="cache/detect.avi"
                     roriginalvideo.source="cache/original.avi"
                     rskelvideo.source="cache/skel.avi"
                     rskelvideo.z = 1
                     rdetectvideo.z = 1
                     roriginalvideo.z = 1
+                }
+
+                onTrainCompleted: {
+                    rstart.enabled = true
+                    rclearCache.enabled = true
                 }
 
                 onCacheCompleted: {
