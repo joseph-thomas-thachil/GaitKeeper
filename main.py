@@ -1,10 +1,15 @@
 import sys
 import os
+import glob
 import cv2
 import csv
 import pymysql
 from functools import partial
 import numpy as np
+import pickle
+from sklearn import preprocessing, neighbors, svm
+import pandas as pd
+from sklearn.cluster import MeanShift, estimate_bandwidth
 from PyQt5.QtGui import QImage
 from PyQt5.QtCore import QUrl, QObject, pyqtSignal, pyqtSlot, QThread
 from PyQt5.QtWidgets import QApplication
@@ -22,10 +27,10 @@ class processWindow(QObject) :
     cacheCompleted = pyqtSignal(int, arguments=['cval'])
 
     dbError = pyqtSignal(int, arguments=['errstat'])
+
     
     @pyqtSlot(bool, int)
     def process(self, train=False, uid=0) :
-        # vid = vprocess("sources/sample.mp4")
         self.busy = busyThread()
         self.thread = QThread(self)
         self.busy.threadCompleted.connect(self.done)
@@ -35,9 +40,6 @@ class processWindow(QObject) :
         self.busy.moveToThread(self.thread)
         self.thread.started.connect(partial(self.busy.do_work, train, uid))
         self.thread.start()
-        # self.busy.finished.connect(self.done)
-        # self.ProcessCompleted.connect(self.busy, SIGNAL("signal"), self.done)
-        # self.busy.start()
 
     @pyqtSlot()
     def clearprocess(self) :
@@ -95,7 +97,7 @@ class processWindow(QObject) :
 
             db.commit()
         except Exception as e :
-            self.dbError.emit(1)
+            self.dbError.emit(0)
         else :
             self.dbError.emit(0)
 
@@ -108,19 +110,12 @@ class busyThread(QObject) :
 
     threadCompleted = pyqtSignal()
     frameProgress = pyqtSignal(int)
-
+    trainCompleted = pyqtSignal()
 
     @pyqtSlot()
     def do_work(self, train, uid) :
-        # vid = vprocess("souces/gait.mp4")
+        self.cap = cv2.VideoCapture("sources/walk_sample.mp4")
 
-    ########################
-        self.cap = cv2.VideoCapture("sources/sample.mp4")
-
-        self.hog = cv2.HOGDescriptor()
-        self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-
-        # self.surf = cv2.xfeatures2d.SURF_create(5000)
         self.kernel = np.ones((3, 3), np.uint8)
 
         self.frameWidth = int(self.cap.get(3))
@@ -134,6 +129,22 @@ class busyThread(QObject) :
 
 
         self.frameCount = 0
+
+        cacheDir = os.path.join(os.getcwd(), 'cache')
+        sourceDir = os.path.join(os.getcwd(), 'sources')
+        try :
+            pass
+            os.remove(os.path.abspath(os.path.join(cacheDir, 'test.csv')))
+        except OSError as e :
+            pass
+        try :
+            os.remove(os.path.abspath(os.path.join(sourceDir, str(uid) + '.csv')))
+        except OSError as e :
+            pass
+        try :
+            os.remove(os.path.abspath(os.path.join(cacheDir, 'target.csv')))
+        except OSError as e :
+            pass
 
         while self.frameCount < 240 :
 
@@ -153,27 +164,31 @@ class busyThread(QObject) :
             boxImg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
             boxImg = cv2.rectangle(boxImg, (x, y), (x + length, y + height), (0, 0, 255), 2)
             cv2.line(boxImg, (0, int(y + 0.75 * height)), (640, int(y + 0.75 * height)), (0, 255, 0), 2)
-            cv2.line(boxImg, (0, int(y + height)), (640, int(y + height)), (255, 0, 0), 2)
+            cv2.line(boxImg, (0, int(y + 0.15 * height)), (640, int(y + 0.15 * height)), (255, 0, 0), 2)
 
             skel, hip, shoulder = self.skelRegion(img, x, y, height, length)
 
-            # skel = cv2.cvtColor(skel, cv2.COLOR_GRAY2BGR)
+            if self.frameCount > 50 and self.frameCount < 151 :
+                if train :
+                    with open('sources/' + str(uid) + '.csv', 'a', newline = '') as csvfile :
+                        with open('cache/target.csv', 'a', newline = '') as targetfile :
+                            fieldnames = ['height', 'stride', 'lowerbody', 'upperbody', 'hipangle', 'shoulderx', 'shouldery']
+                            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-            if train :
-                with open('cache/' + str(uid) + '.csv', 'a', newline = '') as csvfile :
-                    fieldnames = ['height', 'stride', 'lowerbody', 'upperbody', 'hipangle', 'shoulderx', 'shouldery']
-                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                            targetnames = ['class']
+                            targetWriter = csv.DictWriter(targetfile, fieldnames=targetnames)
 
-                    writer.writerow({'height': height, 'stride': length, 'lowerbody': round(0.53 * height, 2), 'upperbody': round(0.4 * height, 2), 'hipangle': round(hip, 2), 'shoulderx': shoulder[0], 'shouldery': shoulder[1]})
-            else :
-                with open('cache/test.csv', 'a', newline = '') as csvfile :
-                    fieldnames = ['height', 'stride', 'lowerbody', 'upperbody', 'hipangle', 'shoulderx', 'shouldery']
-                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                            writer.writerow({'height': height, 'stride': length, 'lowerbody': round(0.53 * height, 2), 'upperbody': round(0.4 * height, 2), 'hipangle': round(hip, 2), 'shoulderx': shoulder[0], 'shouldery': shoulder[1]})
 
-                    writer.writerow({'height': height, 'stride': length, 'lowerbody': round(0.53 * height, 2), 'upperbody': round(0.4 * height, 2), 'hipangle': round(hip, 2), 'shoulderx': shoulder[0], 'shouldery': shoulder[1]})
-           
-            # print("height: ", height, ", stride: ", length, ", lowerbody: ", round(0.53 * height, 2), ", upperbody: ", round(0.4 * height, 2), ", hipAngle: ", round(hip, 2), ", shoulder: ", shoulder)
+                            targetWriter.writerow({'class': uid})
+                            targetWriter.writerow({'class': 0})
+                else :
+                    with open('cache/test.csv', 'a', newline = '') as csvfile :
+                        fieldnames = ['height', 'stride', 'lowerbody', 'upperbody', 'hipangle', 'shoulderx', 'shouldery']
+                        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
+                        writer.writerow({'height': height, 'stride': length, 'lowerbody': round(0.53 * height, 2), 'upperbody': round(0.4 * height, 2), 'hipangle': round(hip, 2), 'shoulderx': shoulder[0], 'shouldery': shoulder[1]})
+               
             self.outOriginal.write(frame)
 
             self.outDetect.write(boxImg)
@@ -189,10 +204,123 @@ class busyThread(QObject) :
         self.outDetect.release()
         self.outOriginal.release()
         self.outSkel.release()
-    ########################
+
+        ########################
+
+        #SVM Code here!!!
+        if train :
+            pass
+            # df = pd.read_csv('cache/data.csv')
+            # numpy_array = df.as_matrix()
+            # print(numpy_array)
+            # new=0.0
+            # d = pd.read_csv('cache/target.csv',header = 0)
+            # narray = d.as_matrix()
+            # print(narray)
+            # clf = svm.SVC(kernel = 'linear', C = 1, gamma = 1e-8, probability = True)
+            # clf.fit(numpy_array, narray)
+
+            # svm_pkl_filename = 'sources/data.pkl'
+            # svm_model_pkl = open(svm_pkl_filename, 'wb')
+            # pickle.dump(clf, svm_model_pkl)
+            # svm_model_pkl.close()
+
+            self.trainCompleted.emit()
+        else :
+            csv_files = glob.glob('sources/*.csv')
+            for cfile in csv_files :
+                # svm1_model_pkl = open(pkl, 'rb')
+                # svm1_model = pickle.load(svm1_model_pkl)
+                # print("Loaded svm model :: ", svm1_model)
+                # d1=pd.read_csv('cache/test.csv',header=0)
+                # narr=d1.as_matrix()
+                # new = 0
+                # for row in narr:
+                    # row = row.reshape(1, -1)
+                    # print(row)
+                    # a=svm1_model.predict(row)
+                    # print(a)
+                    # accuracy = svm1_model.score(row, a)
+                    # print(accuracy)
+                    # if accuracy>new:
+                        # new=accuracy
+                # print(new)
+                cf = pd.read_csv(cfile)
+                master_array = cf.as_matrix()
+                
+                df = pd.read_csv('cache/test.csv')
+                numpy_array = df.as_matrix()
+                print(numpy_array)
+            
+                bandwidth = estimate_bandwidth(master_array, quantile = 0.1)
+                ms = MeanShift(bandwidth = bandwidth, bin_seeding = True)
+                ms.fit(master_array)
+                master_labels = ms.labels_
+                master_centers = ms.cluster_centers_
+                print("Master centroids:\n", master_centers)
+                print("Number of Master clusters: ", len(np.unique(master_labels)))
+
+                bandwidth = estimate_bandwidth(numpy_array, quantile = 0.1)
+                ms = MeanShift(bandwidth = bandwidth, bin_seeding = True)
+                ms.fit(numpy_array)
+                labels = ms.labels_
+                cluster_centers = ms.cluster_centers_
+                print("Test centroids:\n", cluster_centers)
+                print("Number of Test clusters: ", len(np.unique(labels)))
+
+                bandwidth = estimate_bandwidth(master_centers, quantile = 0.9)
+                ms = MeanShift(bandwidth = bandwidth, bin_seeding = True)
+                ms.fit(master_centers)
+                master_centers = ms.cluster_centers_
+
+                bandwidth = estimate_bandwidth(cluster_centers, quantile = 0.9)
+                ms = MeanShift(bandwidth = bandwidth, bin_seeding = True)
+                ms.fit(cluster_centers)
+                cluster_centers = ms.cluster_centers_
+
+                # new_centers = np.concatenate((master_centers, cluster_centers))
+                LIMIT = np.matrix([[5, 5, 5, 5, 5, 5, 5]])
+                if abs(master_centers - cluster_centers).all() < LIMIT.all() :
+                    print("OK!!!")
+                    uid = cfile.split('.')[0].split('/')[1]
+                    self.fetchDatabase(uid)
+                print(master_centers)
+                print(cluster_centers)
+                # bandwidth = estimate_bandwidth(new_centers)
+                # ms.MeanShift()
+                # ms.fit(new_centers)
+                # label = ms.labels_
+
+                # if len(np.unique(label)) == 1 :
+                    # print(uid)
+            
+        ########################
         self.threadCompleted.emit()
-        # print("done")
-        # self.emit(SIGNAL("signal"),"completed")
+
+    def fetchDatabase(self, uid) :
+        HOSTNAME = "localhost"
+        USER = "gaitadmin"
+        PASSWORD = "gaitkeeper"
+        DATABASE = "gaitkeeper"
+
+        db = pymysql.connect(HOSTNAME, USER, PASSWORD, DATABASE)
+        cursor = db.cursor()
+        
+        query = """SELECT * FROM gaituser WHERE id = %s"""
+        
+        try :
+            cursor.execute(query, (uid,))
+
+            data = cursor.fetchone()
+            print(uid)
+            print(data)
+        except Exception as e :
+            print(e)
+        else :
+            pass
+
+        db.close()
+
 
 
     def trackProgress(self, percent) :
@@ -219,39 +347,14 @@ class busyThread(QObject) :
 
         return skel
 
-    def houghTransform(self, edges, frame) :
-        # lines = cv2.HoughLines(edges,1,np.pi/180,2)
-        lines = cv2.HoughLinesP(edges, 1, np.pi/180, 10, 50, 1)
-        # if  lines is not None:
-        #     if lines[0] is not None:
-        #         for rho,theta in lines[0]:
-        #             a = np.cos(theta)
-        #             b = np.sin(theta)
-        #             x0 = a*rho
-        #             y0 = b*rho
-        #             x1 = int(x0 + 1000*(-b))
-        #             y1 = int(y0 + 1000*(a))
-        #             x2 = int(x0 - 1000*(-b))
-        #             y2 = int(y0 - 1000*(a))
-
-        #             cv2.line(frame,(x1,y1),(x2,y2),(0,255,0),3)
-        if lines is not None :
-            for line in lines :
-                x1, y1, x2, y2 = line[0]
-                cv2.line(edges, (x1, y1), (x2, y2), (0, 0, 0), 2)
-
-        return edges
-
     def contourDetect(self, img) :
 
         im2,contours,hierarchy = cv2.findContours(img, 1, 2)
         x = y = h = w = 0
         if len(contours) > 0 : 
-            # contours.pop()
             cnt = max(contours, key=cv2.contourArea)
 
             x,y,w,h = cv2.boundingRect(cnt)
-            # im2 = cv2.rectangle(im2,(x,y),(x+w,y+h),(255,255,255),2)
             cv2.drawContours(im2, contours, -1, (255,255,255), 1)
         return x, y, h, w
 
@@ -267,7 +370,6 @@ class busyThread(QObject) :
 
         xy[6], xy[7], xy[8], xy[9] = self.contourCenter(img, x, x + w, int(y + 0.66 * h), int(y + 0.74 * h), True)
 
-        exl, exr, ext, exb = self.footRegion(img, x, x+w, int(y + 0.66 * h), y + h)
         im3 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         cv2.circle(im3, (x + xy[0], y + xy[1]), 3, (0, 0, 255), -1)
         cv2.circle(im3, (x + xy[2], y + xy[3] + int(0.15 * h)), 3, (0, 0, 255), -1)
@@ -283,17 +385,10 @@ class busyThread(QObject) :
         hipAng = 0
         if x + xy[6] - (x + xy[4]) != 0 :
             hipAng = (y + xy[7] + int(0.66 * h) - (y + xy[5] + int(0.47 * h))) / (x + xy[6] - (x + xy[4]))
-        # print("Hip: ", round(hipAng, 2))
 
         if xy[8] != 0 and xy[9] != 0 :
             cv2.circle(im3, (x + xy[8], y + xy[9] + int(0.66 * h)), 3, (0, 0, 255), -1)
             cv2.line(im3, (x + xy[4], y + xy[5] + int(0.47 * h)), (x + xy[8], y + xy[9] + int(0.66 * h)), (255, 0, 0), 2)
-
-        if len(exl) > 0 and len(exr) > 0 and len(ext) > 0 and len(exb) > 0 :
-            cv2.circle(im3, (x + exl[0], y + exl[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
-            cv2.circle(im3, (x + exr[0], y + exr[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
-            cv2.circle(im3, (x + ext[0], y + ext[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
-            cv2.circle(im3, (x + exb[0], y + exb[1] + int(0.66 * h)), 3, (0, 0, 255), -1)
         
         return im3, hipAng, shoulder
         
@@ -316,7 +411,6 @@ class busyThread(QObject) :
                 if M["m00"] != 0 :
                     cx2 = int(M["m10"] / M["m00"])
                     cy2 = int(M["m01"] / M["m00"])
-                # return cx1, cy1, cx2, cy2
                 return cx1, cy1, cx2, cy2
             cnt = max(contours, key=cv2.contourArea)
             M = cv2.moments(cnt)
@@ -327,19 +421,6 @@ class busyThread(QObject) :
         if multiple == True :
             return cx, cy, cx2, cy2
         return cx, cy 
-
-    def footRegion(self, img, x1, x2, y1, y2) :
-        c1 = img[y1:y2, x1:x2]
-        im2, contours, hierarchy = cv2.findContours(c1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-        extLeft = extRight = extTop = extBot = ()
-        if len(contours) > 0 :
-            c = contours[0]
-            extLeft = tuple(c[c[:, :, 0].argmin()][0])
-            extRight = tuple(c[c[:, :, 0].argmax()][0])
-            extTop = tuple(c[c[:, :, 1].argmin()][0])
-            extBot = tuple(c[c[:, :, 1].argmax()][0])
-        return extLeft, extRight, extTop, extBot
 
 class cacheThread(QObject) :
     def __init__(self) :
@@ -355,21 +436,13 @@ class cacheThread(QObject) :
         print("cache cleared!")
         self.cacheClear.emit()
 
-# Main Function
 if __name__ == '__main__':
-    # Create main app
     myApp = QApplication(sys.argv)
-    # Create a label and set its properties
     engine = QQmlApplicationEngine()
 
     videoanalyze = processWindow()
     engine.rootContext().setContextProperty("videoanalyze", videoanalyze)
-    # engine.addImageProvider("OCV", win)
     engine.load('main.qml')
-    # win = engine.rootObjects()[0]
-    # Show the Label
-    # win.showFullScreen()
 
-    # Execute the Application and Exit
     myApp.exec_()
     sys.exit()
