@@ -606,6 +606,13 @@ ApplicationWindow {
                     cacheText.visible = true
                     cacheTimer.start()
                 }
+
+                onVerifyCompleted: {
+                    mugshot.source="cache/image.png"
+                    mugshotdef.visible = false
+                    detailsdef.text= "UserID: \t" + id + "\n\nName: \t" + name + "\n\nPosition: \t" + pos + "\n\nClearance Level: \t" + clr
+                    detailsdef.font.pointSize= 24
+                }
             }
         }
 
@@ -1285,10 +1292,6 @@ ApplicationWindow {
                     roriginalvideo.z = 1
                 }
 
-                onTrainCompleted: {
-                    rstart.enabled = true
-                    rclearCache.enabled = true
-                }
 
                 onCacheCompleted: {
                     rclearCache.enabled = true
