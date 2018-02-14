@@ -28,6 +28,7 @@ class processWindow(QObject) :
 
     dbError = pyqtSignal(int, arguments=['errstat'])
 
+    verifyCompleted = pyqtSignal(str, str, str, str, arguments=['id', 'name', 'pos', 'clr'])
     
     @pyqtSlot(bool, int)
     def process(self, train=False, uid=0) :
@@ -36,6 +37,8 @@ class processWindow(QObject) :
         self.busy.threadCompleted.connect(self.done)
 
         self.busy.frameProgress.connect(self.progress)
+
+        self.busy.verifyDone.connect(self.verify)
 
         self.busy.moveToThread(self.thread)
         self.thread.started.connect(partial(self.busy.do_work, train, uid))
@@ -51,6 +54,10 @@ class processWindow(QObject) :
         self.busy.moveToThread(self.thread)
         self.thread.started.connect(self.busy.deleteCache)
         self.thread.start()
+
+    def verify(self, uid, name, pos, clr) :
+        
+        self.verifyCompleted.emit(uid, name, pos, clr)
 
     def progress(self, percent) :
 
@@ -110,7 +117,7 @@ class busyThread(QObject) :
 
     threadCompleted = pyqtSignal()
     frameProgress = pyqtSignal(int)
-    trainCompleted = pyqtSignal()
+    verifyDone = pyqtSignal(str, str, str, str)
 
     @pyqtSlot()
     def do_work(self, train, uid) :
@@ -225,7 +232,7 @@ class busyThread(QObject) :
             # pickle.dump(clf, svm_model_pkl)
             # svm_model_pkl.close()
 
-            self.trainCompleted.emit()
+            # self.trainCompleted.emit()
         else :
             csv_files = glob.glob('sources/*.csv')
             for cfile in csv_files :
@@ -283,7 +290,11 @@ class busyThread(QObject) :
                 if abs(master_centers - cluster_centers).all() < LIMIT.all() :
                     print("OK!!!")
                     uid = cfile.split('.')[0].split('/')[1]
-                    self.fetchDatabase(uid)
+                    data = self.fetchDatabase(uid)
+                    img = open('cache/image.png', 'wb')
+                    img.write(data[4])
+                    img.close()
+                    self.verifyDone.emit(str(data[0]), data[1], data[2], str(data[3]))
                 print(master_centers)
                 print(cluster_centers)
                 # bandwidth = estimate_bandwidth(new_centers)
@@ -320,7 +331,8 @@ class busyThread(QObject) :
             pass
 
         db.close()
-
+        
+        return data
 
 
     def trackProgress(self, percent) :
