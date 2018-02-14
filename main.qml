@@ -406,6 +406,23 @@ ApplicationWindow {
                     anchors.left: mugshotblock.right
                 }
 
+                Label {
+                    id: unauth
+                    width: root.width / 4
+                    height: mugshotblock.height
+                    visible: false
+                    anchors.right: mugshotblock.left
+                    anchors.top: mugshotblock.top
+                    anchors.rightMargin: 10
+                    color: "#b3e5fc"
+                    text: qsTr("UNAUTHORIZED!")
+                    font.family: customFont.name
+                    font.pixelSize: 32
+                    fontSizeMode: Text.Fit
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
         //    ComboBox {
         //        id: userlist
         //        implicitWidth: root.width / 7
@@ -608,10 +625,15 @@ ApplicationWindow {
                 }
 
                 onVerifyCompleted: {
+                    unauth.visible = false
                     mugshot.source="cache/image.png"
                     mugshotdef.visible = false
                     detailsdef.text= "UserID: \t" + id + "\n\nName: \t" + name + "\n\nPosition: \t" + pos + "\n\nClearance Level: \t" + clr
                     detailsdef.font.pointSize= 24
+                }
+
+                onUnauthCheck: {
+                    unauth.visible = true
                 }
             }
         }
