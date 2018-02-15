@@ -23,7 +23,7 @@ ApplicationWindow {
 
     SwipeView {
         id: view
-        currentIndex: 1
+        currentIndex: 0
         anchors.fill: parent
 
         Item {
@@ -423,28 +423,6 @@ ApplicationWindow {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-        //    ComboBox {
-        //        id: userlist
-        //        implicitWidth: root.width / 7
-        //        implicitHeight: root.height / 20
-        //        anchors.right: detailsblock.left
-        ////        x: root.width - 10 - start.width
-        //        anchors.top: mugshotframe.top
-        //        anchors.rightMargin: 30
-        //        currentIndex: 2
-        //        model: [ "item 1", "item 2", "item 3" ]
-        //        style: ComboBoxStyle {
-        //            font: customFont.name
-        //            textColor: "#01579b"
-        //        }
-
-        //        background: Rectangle {
-        //            implicitWidth: 223
-        //            implicitHeight: 48
-        //            opacity: 0
-        //        }
-        //    }
-
             Rectangle {
                 id: detailsblock
                 implicitWidth: root.width / 90
@@ -461,7 +439,6 @@ ApplicationWindow {
                     font.family: customFont.name
                     fontSizeMode: Text.VerticalFit
                     anchors.fill: parent
-        //            font.pointSize: 15
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -721,14 +698,12 @@ ApplicationWindow {
                     font.family: customFont.name
                     fontSizeMode: Text.VerticalFit
                     anchors.fill: parent
-        //            font.pointSize: 15
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
             }
             Video {
                 id: rdetectvideo
-        //        visible: false
                 implicitWidth: root.width / 2
                 implicitHeight: root.height / 3 - 10
                 anchors.left: rdetectblock.right
@@ -787,7 +762,6 @@ ApplicationWindow {
                     font.family: customFont.name
                     fontSizeMode: Text.VerticalFit
                     anchors.fill: parent
-        //            font.pointSize: 15
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -1100,7 +1074,6 @@ ApplicationWindow {
                         rstart.enabled = false
                         imgUpload.enabled = false
                         fileDialog.visible = true
-//                        videoanalyze.clearprocess()
                     }
 
                     Glow {
@@ -1304,8 +1277,8 @@ ApplicationWindow {
 
                 onProcessCompleted: {
                     rprogressBar.visible=false
-//                    rstart.enabled = true
-//                    rclearCache.enabled = true
+                    rstart.enabled = true
+                    rclearCache.enabled = true
                     rdetectvideo.source="cache/detect.avi"
                     roriginalvideo.source="cache/original.avi"
                     rskelvideo.source="cache/skel.avi"

@@ -16,7 +16,24 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQuick import QQuickView, QQuickPaintedItem, QQuickImageProvider
 from PyQt5.QtQml import QQmlApplicationEngine
 
+'''
+processWindow class inherits QObject class and this is where the main process is implemented.
+This class consists of 6 PyQt Signals: 
 
+    1. processCompleted: This signal is emitted when the entire process is completed.
+    2. processStatus: This signal is emitted along with the progress bar value to display progress in the GUI.
+    3. cacheCompleted: This signal is emitted when the cache clearing process is done.
+    4. dbError: This signal is used in the Registration section when the start button is pressed before filling the form.
+    5. verifyCompleted: This signal is emitted along with database values when a MATCH is found.
+    6. unauthCheck: This signal is emitted when NO MATCH is found.
+
+This class also contains 3 PyQt Slots:
+
+    1. process: This function is called in the QML when START button is pressed.
+    2. clearprocess: This function is called when the CLEAR CACHE is pressed.
+    3. processDatabase: This function is called in the Registration page when the form is filled.
+
+'''
 class processWindow(QObject) :
     def __init__(self) :
         QObject.__init__(self)
@@ -117,7 +134,18 @@ class processWindow(QObject) :
 
         db.close()
 
+'''
+busyThread class also inherits from QObject class and this is where the threaded process is implemented.
+Since processWindow manages the whole program, it is important that the video processing be done in a separate thread.
+Otherwise during video processing, the GUI will become unresponsive.
+This class consists of 4 PyQt Signals:
 
+    1. threadCompleted: This signal is sent to processWindow class when the thread process is completed.
+    2. frameProgress: This signal is sent to processWindow along with the progress value to show in the GUI.
+    3. verifyDone: This signal is sent to processWindow when a MATCH is found.
+    4. unauthVerify: This signal is sent to processWindow when NO MATCH is found.
+
+'''
 class busyThread(QObject) :
     def __init__(self) :
         QObject.__init__(self)
@@ -127,9 +155,21 @@ class busyThread(QObject) :
     verifyDone = pyqtSignal(str, str, str, str)
     unauthVerify = pyqtSignal()
 
-    @pyqtSlot()
+    '''
+    do_work function accepts two values: train and uid.
+    train is a boolean value to check whether the process is for Registration or for Verification.
+    uid is an integer value providing the user id of the user in case of Registration, otherwise it is taken as 0.
+    
+    Entire openCV video processing is done in this function.
+    Background Subtration is done using the function createBackgroundSubtractorMOG()
+    Since the video is processed with 24 FPS, only 240 frames are processed, i.e 10s video.
+    Gaussian Blurring is done with a matrix size of 9x9.
+    
+    After processing, the extracted features are written to a CSV file. In case of Registration, the file name will be uid.csv and in case of Verification, it will be test.csv.
+    
+    '''
     def do_work(self, train, uid) :
-        self.cap = cv2.VideoCapture("sources/sample.mp4")
+        self.cap = cv2.VideoCapture("sources/walk_sample.mp4")
 
         self.kernel = np.ones((3, 3), np.uint8)
 
@@ -153,11 +193,8 @@ class busyThread(QObject) :
         except OSError as e :
             pass
         try :
-            os.remove(os.path.abspath(os.path.join(sourceDir, str(uid) + '.csv')))
-        except OSError as e :
-            pass
-        try :
-            os.remove(os.path.abspath(os.path.join(cacheDir, 'target.csv')))
+            if train :
+                os.remove(os.path.abspath(os.path.join(sourceDir, str(uid) + '.csv')))
         except OSError as e :
             pass
 
@@ -172,8 +209,6 @@ class busyThread(QObject) :
             fgmask = self.fgbg.apply(blur)
 
             img = cv2.dilate(fgmask,self.kernel,iterations = 1)
-
-            skel = self.skeltonize(img)
 
             x, y, height, length = self.contourDetect(img)
             boxImg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
@@ -220,48 +255,13 @@ class busyThread(QObject) :
         self.outOriginal.release()
         self.outSkel.release()
 
-        ########################
-
         verify = False
 
-        #SVM Code here!!!
         if train :
             pass
-            # df = pd.read_csv('cache/data.csv')
-            # numpy_array = df.as_matrix()
-            # print(numpy_array)
-            # new=0.0
-            # d = pd.read_csv('cache/target.csv',header = 0)
-            # narray = d.as_matrix()
-            # print(narray)
-            # clf = svm.SVC(kernel = 'linear', C = 1, gamma = 1e-8, probability = True)
-            # clf.fit(numpy_array, narray)
-
-            # svm_pkl_filename = 'sources/data.pkl'
-            # svm_model_pkl = open(svm_pkl_filename, 'wb')
-            # pickle.dump(clf, svm_model_pkl)
-            # svm_model_pkl.close()
-
-            # self.trainCompleted.emit()
         else :
             csv_files = glob.glob('sources/*.csv')
             for cfile in csv_files :
-                # svm1_model_pkl = open(pkl, 'rb')
-                # svm1_model = pickle.load(svm1_model_pkl)
-                # print("Loaded svm model :: ", svm1_model)
-                # d1=pd.read_csv('cache/test.csv',header=0)
-                # narr=d1.as_matrix()
-                # new = 0
-                # for row in narr:
-                    # row = row.reshape(1, -1)
-                    # print(row)
-                    # a=svm1_model.predict(row)
-                    # print(a)
-                    # accuracy = svm1_model.score(row, a)
-                    # print(accuracy)
-                    # if accuracy>new:
-                        # new=accuracy
-                # print(new)
                 cf = pd.read_csv(cfile)
                 master_array = cf.as_matrix()
                 
@@ -305,22 +305,24 @@ class busyThread(QObject) :
                     img.write(data[4])
                     img.close()
                     self.verifyDone.emit(str(data[0]), data[1], data[2], str(data[3]))
+                    print(master_centers)
+                    print(cluster_centers)
+        
+                    break
+
                 print(master_centers)
                 print(cluster_centers)
-                # bandwidth = estimate_bandwidth(new_centers)
-                # ms.MeanShift()
-                # ms.fit(new_centers)
-                # label = ms.labels_
-
-                # if len(np.unique(label)) == 1 :
-                    # print(uid)
-            
-        ########################
+        
         if not verify :
             print("Working")
             self.unauthVerify.emit()
         self.threadCompleted.emit()
 
+    '''
+    fetchDatabase function is used to retrieve the matching data from the database.
+    Data consists of ID, NAME, POS, CLR, IMAGE.
+
+    '''
     def fetchDatabase(self, uid) :
         HOSTNAME = "localhost"
         USER = "gaitadmin"
@@ -347,31 +349,18 @@ class busyThread(QObject) :
         
         return data
 
+    '''
+    trackProgress function emits the percentage completed which will be displayed in the progress bar.
 
+    '''
     def trackProgress(self, percent) :
         self.frameProgress.emit(int(percent*100))
 
-    def skeltonize(self, img) :
-        size = np.size(img)
-        skel = np.zeros(img.shape,np.uint8)
+    '''
+    contourDetect function accepts the background subtracted image and finds the contour with maximum size (which will be the human figure).
+    A bounding rectangle is provided in the image as output.
 
-        ret,img = cv2.threshold(img,127,255,cv2.THRESH_TOZERO)
-        element = cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))
-        done = False
-
-        while( not done):
-            eroded = cv2.erode(img,element)
-            temp = cv2.dilate(eroded,element)
-            temp = cv2.subtract(img,temp)
-            skel = cv2.bitwise_or(skel,temp)
-            img = eroded.copy()
-
-            zeros = size - cv2.countNonZero(img)
-            if zeros==size:
-                done = True
-
-        return skel
-
+    '''
     def contourDetect(self, img) :
 
         im2,contours,hierarchy = cv2.findContours(img, 1, 2)
@@ -383,6 +372,17 @@ class busyThread(QObject) :
             cv2.drawContours(im2, contours, -1, (255,255,255), 1)
         return x, y, h, w
 
+    '''
+    skelRegion function accepts the image processed by contourDetect and then finds the required features from the human silhoutte.
+    Features are calculated as follows:
+
+        1. Height of the person is the height of the bounding rectangle.
+        2. Stride length is the width of the bounding rectangle.
+        3. Shoulder is calculated as 15% from top of the head (top of bounding rectangle).
+        4. Hip is calculared as 47% from top of the head.
+        5. Knee is calculated as 67% from top of the head. The angle formed by the line joining hip and knee is calculated as hip angle.
+
+    '''
     def skelRegion(self, img, x, y, h, w) :
 
         xy = [0] * 10
@@ -416,7 +416,15 @@ class busyThread(QObject) :
             cv2.line(im3, (x + xy[4], y + xy[5] + int(0.47 * h)), (x + xy[8], y + xy[9] + int(0.66 * h)), (255, 0, 0), 2)
         
         return im3, hipAng, shoulder
-        
+    
+    '''
+    contouCenter is the function used to find the centroid of the region of image provided. 
+    Since we do not know the exact location of the body within the bounding rectangle, we find it by taking the centroid of a small region within the bounding box.
+    Centroid is calculated as:
+
+        x = int(M["m10"] / M["m00"])
+        y = int(M["m01"] / M["m00"])
+    '''
     def contourCenter(self, img, x1, x2, y1, y2, multiple=False) :
 
         c1 = img[y1:y2, x1:x2]
@@ -447,13 +455,20 @@ class busyThread(QObject) :
             return cx, cy, cx2, cy2
         return cx, cy 
 
+'''
+cacheThread class is similar to busyThread class with this class being used for clearing the cache directory.
+It has 1 PyQt Signal:
+    1. cacheClear: This signal is sent to processWindow class to show that the cache is cleared.
+
+deleteCache function within this class takes care of that.
+
+'''
 class cacheThread(QObject) :
     def __init__(self) :
         QObject.__init__(self)
     
     cacheClear = pyqtSignal()
 
-    @pyqtSlot()
     def deleteCache(self) :
         cacheDir = os.path.join(os.getcwd(), 'cache')
         files = os.listdir(cacheDir)
