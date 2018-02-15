@@ -1324,6 +1324,17 @@ ApplicationWindow {
         Item {
             id: aboutPage
 
+            Text {
+                id: content
+                anchors.fill: parent
+                anchors.margins: 50
+                anchors.bottomMargin: 100
+                text: qsTr("GaitKeeper is a revolutionary markerless Gait Analysis platform which is guaranteed \nto add another layer of low-cost security to your organization. \nWe analyze a variety of key markers on the human body to ensure that only those with sufficient clearance levels \nand are authorized to access key areas of your organization, are able to do so.\nWith GaitKeeper, you can always rest easy knowing that you made \nthe right choice of choosing a guardian angel for your company.")
+                font.family: customFont.name
+                font.pointSize: 24
+                color: "#01579b"
+            }
+
             Button {
                 id: prev3
                 implicitWidth: start.width
