@@ -44,10 +44,16 @@ class processWindow(QObject) :
     cacheCompleted = pyqtSignal(int, arguments=['cval'])
 
     dbError = pyqtSignal(int, arguments=['errstat'])
+    dbSuccess = pyqtSignal()
 
     verifyCompleted = pyqtSignal(str, str, str, str, arguments=['id', 'name', 'pos', 'clr'])
     
     unauthCheck = pyqtSignal(int, arguments=['unath'])
+
+    idError = pyqtSignal()
+    nameError = pyqtSignal()
+    posError = pyqtSignal()
+    clrError = pyqtSignal()
 
     @pyqtSlot(bool, int)
     def process(self, train=False, uid=0) :
@@ -104,7 +110,7 @@ class processWindow(QObject) :
 
         db.close()
     
-    @pyqtSlot(int, str, str, str, str)
+    @pyqtSlot(str, str, str, str, str)
     def processDatabase(self, uid, uname, upos, uclr, uimg) :
 
         HOSTNAME = "localhost"
@@ -115,6 +121,22 @@ class processWindow(QObject) :
         uimg = uimg.split(':')[1]
 
         blob = open(uimg, 'rb').read()
+
+        if not uid.isalnum() :
+            self.idError.emit()
+            return
+
+        if not uname.isalpha() :
+            self.nameError.emit()
+            return
+
+        if not upos.isalpha() :
+            self.posError.emit()
+            return
+
+        if not uclr.isnumeric() :
+            self.clrError.emit()
+            return
 
         self.createDatabase(HOSTNAME, USER, PASSWORD, DATABASE)
 
@@ -127,8 +149,9 @@ class processWindow(QObject) :
             cursor.execute(query, (uid, uname, upos, uclr, blob))
 
             db.commit()
-        except Exception as e :
-            self.dbError.emit(0)
+            self.dbSuccess.emit()
+        except pymysql.IntegrityError as e :
+            self.dbError.emit(1)
         else :
             self.dbError.emit(0)
 
