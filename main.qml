@@ -323,7 +323,7 @@ ApplicationWindow {
                     visible: false
                     width: clearCache.width / 2
                     height: clearCache.height / 4
-                    color: "#01579b"
+                    color: "#ff1a00"
                     anchors.left: start.left
                     anchors.top: clearCache.bottom
                     anchors.topMargin: 2
@@ -913,7 +913,7 @@ ApplicationWindow {
                     visible: false
                     width: rclearCache.width / 2
                     height: rclearCache.height / 4
-                    color: "#01579b"
+                    color: "#ff1a00"
                     anchors.left: rstart.left
                     anchors.top: rclearCache.bottom
                     anchors.topMargin: 2
@@ -959,6 +959,7 @@ ApplicationWindow {
                   anchors.topMargin: 50
                   color: "#b3e5fc"
                   background: Rectangle {
+                      id: uidFrame
                       implicitWidth: 223
                       implicitHeight: 48
                       color: "#00000000"
@@ -985,6 +986,7 @@ ApplicationWindow {
                   anchors.topMargin: 20
                   color: "#b3e5fc"
                   background: Rectangle {
+                      id: unameFrame
                       implicitWidth: 223
                       implicitHeight: 48
                       color: "#00000000"
@@ -1011,6 +1013,7 @@ ApplicationWindow {
                   anchors.topMargin: 20
                   color: "#b3e5fc"
                   background: Rectangle {
+                      id: uposFrame
                       implicitWidth: 223
                       implicitHeight: 48
                       color: "#00000000"
@@ -1037,6 +1040,7 @@ ApplicationWindow {
                   anchors.topMargin: 20
                   color: "#b3e5fc"
                   background: Rectangle {
+                      id: uclrFrame
                       implicitWidth: 223
                       implicitHeight: 48
                       color: "#00000000"
@@ -1122,7 +1126,7 @@ ApplicationWindow {
                     id: fileDialog
                     title: "Please choose a file"
                     folder: shortcuts.home
-                    nameFilters: ["Image Files (*.jpg *.png)", "All Files (*)"]
+                    nameFilters: ["Image Files (*.png)"]
                     onAccepted: {
                         console.log("You chose: " + fileDialog.fileUrls)
                         rclearCache.enabled = true
@@ -1318,21 +1322,95 @@ ApplicationWindow {
                         imgdef.visible = true
                     }
                 }
+
+                onIdError: {
+                    uidFrame.border.color = "#ff1a00"
+                    usertext.color = "#ff1a00"
+                    rcacheText.text = "ID should contain only alphanumerics"
+                    rcacheText.visible = true
+                    rcacheTimer.start()
+                }
+
+                onNameError: {
+                    unameFrame.border.color = "#ff1a00"
+                    nametext.color = "#ff1a00"
+                    rcacheText.text = "Name should contain only alphabets"
+                    rcacheText.visible = true
+                    rcacheTimer.start()
+                }
+
+                onPosError: {
+                    uposFrame.border.color = "#ff1a00"
+                    placetext.color = "#ff1a00"
+                    rcacheText.text = "Position should contain only alphabets"
+                    rcacheText.visible = true
+                    rcacheTimer.start()
+                }
+
+                onClrError: {
+                    uclrFrame.border.color = "#ff1a00"
+                    cleartext.color = "#ff1a00"
+                    rcacheText.text = "Clearance should contain only digits"
+                    rcacheText.visible = true
+                    rcacheTimer.start()
+                }
+
+                onDbSuccess: {
+                    uidFrame.border.color = "#01579b"
+                    usertext.color = "#01579b"
+                    unameFrame.border.color = "#01579b"
+                    nametext.color = "#01579b"
+                    uposFrame.border.color = "#01579b"
+                    placetext.color = "#01579b"
+                    uclrFrame.border.color = "#01579b"
+                    cleartext.color = "#01579b"
+                }
             }
         }
 
         Item {
             id: aboutPage
 
+            Frame {
+                id: contentFrame
+                anchors.fill: parent
+                anchors.margins: root.height / 8
+            }
+
+            Text {
+                id: head
+                anchors.bottom: content.top
+                anchors.left: content.left
+                text: qsTr("GaitKeeper")
+                font.family: customFont.name
+                font.pointSize: 32
+                color: "#01579b"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
             Text {
                 id: content
-                anchors.fill: parent
-                anchors.margins: 50
-                anchors.bottomMargin: 100
-                text: qsTr("GaitKeeper is a revolutionary markerless Gait Analysis platform which is guaranteed \nto add another layer of low-cost security to your organization. \nWe analyze a variety of key markers on the human body to ensure that only those with sufficient clearance levels \nand are authorized to access key areas of your organization, are able to do so.\nWith GaitKeeper, you can always rest easy knowing that you made \nthe right choice of choosing a guardian angel for your company.")
+                anchors.fill: contentFrame
+                text: qsTr("GaitKeeper is a revolutionary markerless Gait Analysis platform which is\
+                            \nguaranteed to add another layer of low-cost security to your organization.\
+                            \nWe analyze a variety of key markers on the human body to ensure that\
+                            \nonly those with sufficient clearance levels and are authorized\
+                            \nto access key areas of your organization, are able to do so.\
+                            \nWith GaitKeeper, you can always rest easy knowing that you made\
+                            \nthe right choice of choosing a guardian angel for your company.\
+                            \n\nDeveloped By:\
+                            \nAbijith AR\
+                            \nCA Anand Shankar\
+                            \nShilpa Vinod\
+                            \nVysakh Induchoodan\
+                            \nYedhukrishna Girish")
                 font.family: customFont.name
                 font.pointSize: 24
+                fontSizeMode: Text.Fit
                 color: "#01579b"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
 
             Button {
