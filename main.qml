@@ -10,11 +10,11 @@ import QtQuick.Dialogs 1.0
 ApplicationWindow {
     id: root
     visible: true
-    minimumWidth: 1024
-    minimumHeight: 576
-    visibility: Window.FullScreen
+    minimumWidth: 1680
+    minimumHeight: 900
+//    visibility: Window.FullScreen
     title: qsTr("GaitKeeper")
-    color: "#da000000"
+    color: "#ee000000"
 
     FontLoader {
         id: customFont
@@ -232,7 +232,7 @@ ApplicationWindow {
                 anchors.top: originalvideo.top
                 anchors.rightMargin: 30
                 contentItem: Text {
-                    text: qsTr("START")
+                    text: qsTr("VERIFY")
                     fontSizeMode: Text.Fit
                     id: starttext
                     font.family: customFont.name
@@ -818,7 +818,7 @@ ApplicationWindow {
                 anchors.top: roriginalvideo.top
                 anchors.rightMargin: 30
                 contentItem: Text {
-                    text: qsTr("START")
+                    text: qsTr("REGISTER")
                     fontSizeMode: Text.Fit
                     id: rstarttext
                     font.family: customFont.name
