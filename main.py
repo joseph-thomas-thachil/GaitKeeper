@@ -55,8 +55,8 @@ class processWindow(QObject) :
     posError = pyqtSignal()
     clrError = pyqtSignal()
 
-    @pyqtSlot(bool, int)
-    def process(self, train=False, uid=0) :
+    @pyqtSlot(bool, str)
+    def process(self, train, uid) :
         self.busy = busyThread()
         self.thread = QThread(self)
         self.busy.threadCompleted.connect(self.done)
@@ -122,17 +122,24 @@ class processWindow(QObject) :
 
         blob = open(uimg, 'rb').read()
 
-        if not uid.isalnum() :
+        print(uid)
+        if not uid.isnumeric() :
             self.idError.emit()
             return
 
         if not uname.isalpha() :
-            self.nameError.emit()
-            return
+            if not uname.replace(' ', '').isalpha() :
+                self.nameError.emit()
+                return
+            else :
+                pass
 
         if not upos.isalpha() :
-            self.posError.emit()
-            return
+            if not upos.replace(' ', '').isalpha() :
+                self.posError.emit()
+                return
+            else :
+                pass
 
         if not uclr.isnumeric() :
             self.clrError.emit()
@@ -193,6 +200,7 @@ class busyThread(QObject) :
     '''
     def do_work(self, train, uid) :
         self.cap = cv2.VideoCapture("sources/walk_sample.mp4")
+        print(uid)
 
         self.kernel = np.ones((3, 3), np.uint8)
 

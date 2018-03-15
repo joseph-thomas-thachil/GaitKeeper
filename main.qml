@@ -351,7 +351,7 @@ ApplicationWindow {
                 Label {
                     id: mugshottext
                     color: "#b3e5fc"
-                    text: qsTr("M\nU\nG\nS\nH\nO\nT")
+                    text: qsTr("P\nH\nO\nT\nO")
                     font.family: customFont.name
                     fontSizeMode: Text.VerticalFit
                     anchors.fill: parent
@@ -414,7 +414,7 @@ ApplicationWindow {
                     anchors.right: mugshotblock.left
                     anchors.top: mugshotblock.top
                     anchors.rightMargin: 10
-                    color: "#b3e5fc"
+                    color: "#ff1a00"
                     text: qsTr("UNAUTHORIZED!")
                     font.family: customFont.name
                     font.pixelSize: 32
@@ -840,6 +840,7 @@ ApplicationWindow {
 
 
                         videoanalyze.processDatabase(userid.text, username.text, userpos.text, userclr.text, fileDialog.fileUrl)
+                        console.log(userid.text)
                     }
                     else {
                         rcacheText.text = "Fill ALL fields and then press START"
@@ -1326,7 +1327,7 @@ ApplicationWindow {
                 onIdError: {
                     uidFrame.border.color = "#ff1a00"
                     usertext.color = "#ff1a00"
-                    rcacheText.text = "ID should contain only alphanumerics"
+                    rcacheText.text = "ID should contain only digits"
                     rcacheText.visible = true
                     rcacheTimer.start()
                 }
