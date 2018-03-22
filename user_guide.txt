@@ -1,0 +1,13 @@
+<span style='font-size:42px'>User Guide</span><br><br>
+<span style='font-size:32px'>Getting Started</span><br>
+<ol>
+  <li>Choose one of the 4 buttons to get started:-</li>
+  <ol>
+    <li>Registration: To add a new person to the database.</li>
+    <li>Verification: To check whether the person matches with the database.</li>
+    <li>User Guide: To display this page.</li>
+    <li>About: To display about page.</li>
+  </ol>
+  <li>You can click the 'Quit' button at the top of the page to exit the application. This button is particularly useful in case of fullscreen usage of the application.</li>
+</ol>
+<span style='font-size:32px'>Registration</span><br>

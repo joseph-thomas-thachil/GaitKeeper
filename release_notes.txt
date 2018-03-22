@@ -1,0 +1,7 @@
+<span style='font-size:32px'>Release Notes</span><br>
+version: 2.0<br><br>
+<ul>
+  <li>Complete Layout Change with new color palette.</li>
+  <li>Added Buttons for each view.</li>
+  <li>New 'Quit' and 'Home' buttons added.</li>
+</ul>

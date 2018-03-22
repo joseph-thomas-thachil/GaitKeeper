@@ -1,0 +1,10 @@
+<span style='font-size:38px'>About GaitKeeper</span><br><br>
+GaitKeeper is a revolutionary markerless Gait Analysis platform which is guaranteed to add another layer of low-cost security to your organization.<br>
+We analyze a variety of key markers on the human body to ensure that only those with sufficient clearance levels and are authorized to access key areas of your organization, are able to do so.<br>
+With GaitKeeper, you can always rest easy knowing that you made the right choice of choosing a guardian angel for your company.<br>
+Developed By:<br>
+Abijith AR<br>
+CA Anand Shankar<br>
+Shilpa Vinod<br>
+Vysakh Induchoodan<br>
+Yedhukrishna Girish
