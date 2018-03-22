@@ -12,7 +12,6 @@ ApplicationWindow {
     visible: true
     minimumWidth: 1680
     minimumHeight: 900
-//    visibility: Window.FullScreen
     title: qsTr("GaitKeeper")
 
     property var bgcolor: "#2e2f31"
@@ -29,6 +28,13 @@ ApplicationWindow {
         id: iconFont
         source: "sources/Font Awesome 5 Free-Regular-400.otf"
     }
+
+    Component.onCompleted : {
+        videoanalyze.getRelease()
+        videoanalyze.getGuide()
+        videoanalyze.getAbout()
+    }
+
 
     Rectangle {
         id:mainHeader
@@ -174,37 +180,20 @@ ApplicationWindow {
                 }
 
                 Rectangle {
-                    id: welText
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.margins: 20
-                    implicitHeight: parent.height / 12
+                    implicitHeight: parent.height / 2 - 20
                     implicitWidth: parent.width - 40
-                    color: bgcolor
-                    Label {
-                        id: welLabel
-                        anchors.fill: parent
-                        text: qsTr("Welcome,")
-                        color: "gray"
-                        font.pointSize: 32
-                        font.family: customFont.name
-                    }
-                 }
-
-                Rectangle {
-                    anchors.top: welText.bottom
-                    anchors.left: welText.left
-                    anchors.margins: 20
-                    implicitHeight: welText.height * 2
-                    implicitWidth: welText.width
                     color: bgcolor
                     Label {
                         anchors.fill: parent
                         fontSizeMode: Text.Fit
-                        textFormat: Text.StyledText
-                        text: "Choose what you want to do.<br>New to GaitKeeper? Check out our comprehensive <font color='skyblue'/>User Guide<font color='gray'/> to to get started."
+                        textFormat: Text.RichText
+                        text: "<span style='font-size:32px'>Welcome,</span><br><br>Choose what you want to do.<br>New to GaitKeeper? Check out our comprehensive <font color='skyblue'>User Guide</font> to to get started."
                         color: "gray"
-                        font.pointSize: 24
+                        font.pointSize: 16
+                        wrapMode: Text.WordWrap
                         font.family: customFont.name
                     }
                 }
@@ -235,6 +224,24 @@ ApplicationWindow {
                         implicitHeight: 48
                         color: "green"
                         radius: 2
+                    }
+
+                    ToolTip {
+                        id: regTip
+                        text : qsTr("Register the gait features of a new Person")
+                        delay: 1000
+                        timeout: 3000
+                        visible: regButton.hovered
+                        contentItem: Text {
+                            text: regTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
                     }
 
                     onClicked: {
@@ -272,6 +279,24 @@ ApplicationWindow {
                         radius: 2
                     }
 
+                    ToolTip {
+                        id: verTip
+                        text : qsTr("Check Whether the person is authorized or not (from video).")
+                        delay: 1000
+                        timeout: 3000
+                        visible: verButton.hovered
+                        contentItem: Text {
+                            text: verTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
+                    }
+
                     onClicked: {
                         view.currentIndex = 2
                     }
@@ -305,6 +330,24 @@ ApplicationWindow {
                         implicitHeight: 48
                         color: "green"
                         radius: 2
+                    }
+
+                    ToolTip {
+                        id: useTip
+                        text : qsTr("A comprehensive User Guide to get started.")
+                        delay: 1000
+                        timeout: 3000
+                        visible: useButton.hovered
+                        contentItem: Text {
+                            text: useTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
                     }
 
                     onClicked: {
@@ -342,8 +385,27 @@ ApplicationWindow {
                         radius: 2
                     }
 
+                    ToolTip {
+                        id: aboutTip
+                        text : qsTr("A small desciption about the software and team behind it.")
+                        delay: 1000
+                        timeout: 3000
+                        visible: aboutButton.hovered
+                        contentItem: Text {
+                            text: aboutTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
+                    }
+
                     onClicked: {
                         view.currentIndex = 4
+                        videoanalyze.getAbout()
                     }
 
                     onHoveredChanged: hovered ? aboutButtonRect.color="forestgreen" : aboutButtonRect.color="green"
@@ -362,6 +424,25 @@ ApplicationWindow {
                 contentItem: Rectangle {
                     anchors.fill: parent
                     color: "#2e2f31"
+                }
+
+                Label {
+                    id: relLabel
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    textFormat: Text.RichText
+                    color: "gray"
+                    font.pointSize: 16
+                    font.family: customFont.name
+                    wrapMode: Text.WordWrap
+                }
+            }
+
+            Connections {
+                target: videoanalyze
+
+                onReleaseSignal: {
+                    relLabel.text = releaseText
                 }
             }
         }
@@ -587,6 +668,24 @@ ApplicationWindow {
                     opacity: 0
                 }
 
+                ToolTip {
+                    id: rstartTip
+                    text : qsTr("Add the person to the database and save his/her gait features.")
+                    delay: 1000
+                    timeout: 3000
+                    visible: rstart.hovered
+                    contentItem: Text {
+                        text: rstartTip.text
+                        font.family: customFont.name
+                        color: "silver"
+                    }
+                    background: Rectangle {
+                        color: "black"
+                        opacity: 0.7
+                        radius: 5
+                    }
+                }
+
                 onClicked: {
                     if ((userid.length > 0 ) && (username.length > 0) && (userpos.length > 0) && (userclr.length > 0) && (upimg.source != "")) {
 
@@ -643,6 +742,24 @@ ApplicationWindow {
                         implicitWidth: 223
                         implicitHeight: 48
                         opacity: 0
+                    }
+
+                    ToolTip {
+                        id: rcacheTip
+                        text : qsTr("Clear the 'cache' directory.")
+                        delay: 1000
+                        timeout: 3000
+                        visible: rclearCache.hovered
+                        contentItem: Text {
+                            text: rcacheTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
                     }
 
                     onClicked: {
@@ -830,6 +947,24 @@ ApplicationWindow {
                         opacity: 0
                     }
 
+                    ToolTip {
+                        id: upTip
+                        text : qsTr("Add image of the person to be registered (PNG format).")
+                        delay: 1000
+                        timeout: 3000
+                        visible: imgUpload.hovered
+                        contentItem: Text {
+                            text: upTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
+                    }
+
                     onClicked: {
                         rclearCache.enabled = false
                         rstart.enabled = false
@@ -928,105 +1063,6 @@ ApplicationWindow {
                             color: "#01579b"
                         }
                     }
-                }
-
-                Button {
-                    id: next2
-                    implicitWidth: start.width
-                    implicitHeight: start.height * 2
-                    anchors.right: imgframe.right
-                    anchors.bottom: roriginalvideo.bottom
-                    anchors.bottomMargin: 50
-                    contentItem: Text {
-                        text: qsTr(">")
-                        fontSizeMode: Text.Fit
-                        id: nexttext2
-                        font.family: customFont.name
-                        color: "#01579b"
-                        font.pointSize: 48
-                        opacity: enabled ? 1.0 : 0.3
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-                    background: Rectangle {
-                        implicitWidth: 223
-                        implicitHeight: 48
-                        opacity: 0
-                    }
-
-                    onClicked: {
-                        view.currentIndex = 2
-                    }
-
-                    Glow {
-                            anchors.fill: nexttext2
-                            id: nextglow2
-                            radius: 8
-                            samples: 17
-                            color: "#b3e5fc"
-                            source: nexttext2
-                            visible: false
-                        }
-
-                    onHoveredChanged: hovered ? nextglow2.visible=true : nextglow2.visible=false
-
-                }
-
-                Button {
-                    id: prev2
-                    implicitWidth: start.width
-                    implicitHeight: start.height * 2
-                    padding: 0
-                    anchors.right: next2.right
-                    anchors.bottom: next2.top
-                    contentItem: Text {
-                        text: qsTr("<")
-                        fontSizeMode: Text.Fit
-                        id: prevtext2
-                        font.family: customFont.name
-                        color: "#01579b"
-                        font.pointSize: 48
-                        opacity: enabled ? 1.0 : 0.3
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-                    background: Rectangle {
-                        implicitWidth: 223
-                        implicitHeight: 48
-                        opacity: 0
-                    }
-
-                    onClicked: {
-                        view.currentIndex = 0
-                    }
-
-                    Glow {
-                            anchors.fill: prevtext2
-                            id: prevglow2
-                            radius: 8
-                            samples: 17
-                            color: "#b3e5fc"
-                            source: prevtext2
-                            visible: false
-                        }
-
-                    onHoveredChanged: hovered ? prevglow2.visible=true : prevglow2.visible=false
-
-                }
-
-                Text {
-                    id: pagetext2
-                    width: userid.width
-                    height: userid.height
-                    x: root.width - 10 - userid.width
-                    text: qsTr("Registration")
-                    font.family: customFont.name
-                    font.pointSize: 24
-                    color: "#b3e5fc"
-                    y: root.height - 10 - userid.height
-
                 }
 
             Connections {
@@ -1350,6 +1386,24 @@ ApplicationWindow {
                     radius: 2
                 }
 
+                ToolTip {
+                    id: startTip
+                    text : qsTr("Compare Gait features of the person with database.")
+                    delay: 1000
+                    timeout: 3000
+                    visible: start.hovered
+                    contentItem: Text {
+                        text: startTip.text
+                        font.family: customFont.name
+                        color: "silver"
+                    }
+                    background: Rectangle {
+                        color: "black"
+                        opacity: 0.7
+                        radius: 5
+                    }
+                }
+
                 onClicked: {
                     progressBar.visible = true
                     detectvideo.source = ""
@@ -1399,6 +1453,24 @@ ApplicationWindow {
                         implicitHeight: 48
                         color: "#3476d4"
                         radius: 2
+                    }
+
+                    ToolTip {
+                        id: cacheTip
+                        text : qsTr("Clear the 'cache' directory.")
+                        delay: 1000
+                        timeout: 3000
+                        visible: clearCache.hovered
+                        contentItem: Text {
+                            text: cacheTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
                     }
 
                     onClicked: {
@@ -1622,62 +1694,6 @@ ApplicationWindow {
                 }
             }
 
-            Button {
-                id: next1
-                implicitWidth: start.width
-                implicitHeight: start.height * 2
-                anchors.right: mugshotframe.right
-                anchors.bottom: originalvideo.bottom
-                anchors.bottomMargin: 50
-                contentItem: Text {
-                    text: qsTr(">")
-                    fontSizeMode: Text.Fit
-                    id: nexttext1
-                    font.family: customFont.name
-                    color: "gray"
-                    font.pointSize: 48
-                    opacity: enabled ? 1.0 : 0.3
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
-                background: Rectangle {
-                    implicitWidth: 223
-                    implicitHeight: 48
-                    opacity: 0
-                }
-
-                onClicked: {
-                    view.currentIndex = 1
-                }
-
-                Glow {
-                        anchors.fill: nexttext1
-                        id: nextglow1
-                        radius: 8
-                        samples: 17
-                        color: "#b3e5fc"
-                        source: nexttext1
-                        visible: false
-                    }
-
-                onHoveredChanged: hovered ? nextglow1.visible=true : nextglow1.visible=false
-
-            }
-
-            Text {
-                id: pagetext1
-                width: userid.width
-                height: userid.height
-                x: root.width - 10 - userid.width
-                text: qsTr("Verification")
-                font.family: customFont.name
-                font.pointSize: 24
-                color: "#b3e5fc"
-                y: root.height - 10 - userid.height
-
-            }
-
             Connections {
                 target: videoanalyze
 
@@ -1733,107 +1749,70 @@ ApplicationWindow {
 
         Item {
             id: guidePage
+
+            Pane {
+                id: guidePane
+                anchors.fill: parent
+                anchors.margins: 20
+                contentItem: Rectangle {
+                    anchors.fill: parent
+                    color: bgcolor
+                }
+
+                Label {
+                    id: guide
+                    anchors.fill: parent
+                    font.family: customFont.name
+                    font.pointSize: 16
+                    fontSizeMode: Text.Fit
+                    textFormat: Text.RichText
+                    wrapMode: Text.WordWrap
+                    color: "gray"
+                }
+            }
+
+            Connections {
+                target: videoanalyze
+
+                onGuideSignal: {
+                    guide.text = qsTr(guideText)
+                }
+            }
         }
 
         Item {
             id: aboutPage
 
-            Frame {
-                id: contentFrame
+            Pane {
+                id: aboutPane
                 anchors.fill: parent
-                anchors.margins: root.height / 8
-            }
+                anchors.margins: 20
+                contentItem: Rectangle {
+                    anchors.fill: parent
+                    color: bgcolor
+                }
 
-            Text {
-                id: head
-                anchors.bottom: content.top
-                anchors.left: content.left
-                text: qsTr("GaitKeeper")
-                font.family: customFont.name
-                font.pointSize: 32
-                color: "#01579b"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Text {
-                id: content
-                anchors.fill: contentFrame
-                text: qsTr("GaitKeeper is a revolutionary markerless Gait Analysis platform which is\
-                            \nguaranteed to add another layer of low-cost security to your organization.\
-                            \nWe analyze a variety of key markers on the human body to ensure that\
-                            \nonly those with sufficient clearance levels and are authorized\
-                            \nto access key areas of your organization, are able to do so.\
-                            \nWith GaitKeeper, you can always rest easy knowing that you made\
-                            \nthe right choice of choosing a guardian angel for your company.\
-                            \n\nDeveloped By:\
-                            \nAbijith AR\
-                            \nCA Anand Shankar\
-                            \nShilpa Vinod\
-                            \nVysakh Induchoodan\
-                            \nYedhukrishna Girish")
-                font.family: customFont.name
-                font.pointSize: 24
-                fontSizeMode: Text.Fit
-                color: "#01579b"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Button {
-                id: prev3
-                implicitWidth: start.width
-                implicitHeight: start.height * 2
-                x: root.width - start.width - 10
-                y: root.height - start.height * 2 - 50
-                contentItem: Text {
-                    text: qsTr("<")
-                    fontSizeMode: Text.Fit
-                    id: prevtext3
+                Label {
+                    id: content
+                    anchors.fill: parent
                     font.family: customFont.name
-                    color: "#01579b"
-                    font.pointSize: 48
-                    opacity: enabled ? 1.0 : 0.3
+                    font.pointSize: 24
+                    fontSizeMode: Text.Fit
+                    textFormat: Text.RichText
+                    wrapMode: Text.WordWrap
+                    color: "gray"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
-                background: Rectangle {
-                    implicitWidth: 223
-                    implicitHeight: 48
-                    opacity: 0
                 }
 
-                onClicked: {
-                    view.currentIndex = 1
-                }
+                Connections {
+                    target: videoanalyze
 
-                Glow {
-                        anchors.fill: prevtext3
-                        id: prevglow3
-                        radius: 8
-                        samples: 17
-                        color: "#b3e5fc"
-                        source: prevtext3
-                        visible: false
+                    onAboutSignal: {
+                        content.text = qsTr(aboutText)
                     }
-
-                onHoveredChanged: hovered ? prevglow3.visible=true : prevglow3.visible=false
+                }
             }
-
-            Text {
-                id: pagetext3
-                width: userid.width
-                height: userid.height
-                x: root.width - 10 - userid.width
-                text: qsTr("About")
-                font.family: customFont.name
-                font.pointSize: 24
-                color: "#b3e5fc"
-                y: root.height - 10 - userid.height
-
-            }
-
         }
       }
     }
