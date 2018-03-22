@@ -55,6 +55,10 @@ class processWindow(QObject) :
     posError = pyqtSignal()
     clrError = pyqtSignal()
 
+    aboutSignal = pyqtSignal(str, arguments=['aboutText'])
+    releaseSignal = pyqtSignal(str, arguments=['releaseText'])
+    guideSignal = pyqtSignal(str, arguments=['guideText'])
+
     @pyqtSlot(bool, str)
     def process(self, train, uid) :
         self.busy = busyThread()
@@ -163,6 +167,30 @@ class processWindow(QObject) :
             self.dbError.emit(0)
 
         db.close()
+
+    @pyqtSlot()
+    def getAbout(self) :
+        
+        with open('about.txt') as aboutFile :
+            about = aboutFile.read()
+
+        self.aboutSignal.emit(about)
+
+    @pyqtSlot()
+    def getRelease(self) :
+
+        with open('release_notes.txt') as releaseFile :
+            release = releaseFile.read()
+
+        self.releaseSignal.emit(release)
+
+    @pyqtSlot()
+    def getGuide(self) :
+
+        with open('user_guide.txt') as guideFile :
+            guide = guideFile.read()
+
+        self.guideSignal.emit(guide)
 
 '''
 busyThread class also inherits from QObject class and this is where the threaded process is implemented.
