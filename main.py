@@ -199,7 +199,7 @@ class busyThread(QObject) :
     
     '''
     def do_work(self, train, uid) :
-        self.cap = cv2.VideoCapture("sources/walk_sample.mp4")
+        self.cap = cv2.VideoCapture("sources/sample.mp4")
         print(uid)
 
         self.kernel = np.ones((3, 3), np.uint8)
