@@ -39,7 +39,9 @@ class processWindow(QObject) :
         QObject.__init__(self)
 
     processCompleted = pyqtSignal(int, arguments=['done'])
+    trainCompleted = pyqtSignal(int, arguments=['done'])
     processStatus = pyqtSignal(int, arguments=['val'])
+    trainStatus = pyqtSignal(int, arguments=['val'])
 
     cacheCompleted = pyqtSignal(int, arguments=['cval'])
 
@@ -93,12 +95,17 @@ class processWindow(QObject) :
         
         self.verifyCompleted.emit(uid, name, pos, clr)
 
-    def progress(self, percent) :
-
-        self.processStatus.emit(percent)
+    def progress(self, percent, train) :
+        if train :
+            self.trainStatus.emit(percent)
+        else :
+            self.processStatus.emit(percent)
     
-    def done(self) :
-        self.processCompleted.emit(1)
+    def done(self, train) :
+        if train :
+            self.trainCompleted.emit(1)
+        else :
+            self.processCompleted.emit(1)
 
     def clear(self) :
         self.cacheCompleted.emit(1)
@@ -208,8 +215,8 @@ class busyThread(QObject) :
     def __init__(self) :
         QObject.__init__(self)
 
-    threadCompleted = pyqtSignal()
-    frameProgress = pyqtSignal(int)
+    threadCompleted = pyqtSignal(bool)
+    frameProgress = pyqtSignal(int, bool)
     verifyDone = pyqtSignal(str, str, str, str)
     unauthVerify = pyqtSignal()
 
@@ -306,7 +313,11 @@ class busyThread(QObject) :
             self.frameCount += 1
 
             if self.frameCount % 10 == 0 : 
-                self.trackProgress(self.frameCount/240)
+                if train :
+                    self.trackProgress(self.frameCount/240, True)
+                else :
+                    self.trackProgress(self.frameCount/240, False)
+
 
         print("processing done!")
         self.cap.release()
@@ -375,7 +386,10 @@ class busyThread(QObject) :
         if not verify :
             print("Working")
             self.unauthVerify.emit()
-        self.threadCompleted.emit()
+        if train :
+            self.threadCompleted.emit(True)
+        else :
+            self.threadCompleted.emit(False)
 
     '''
     fetchDatabase function is used to retrieve the matching data from the database.
@@ -398,7 +412,7 @@ class busyThread(QObject) :
 
             data = cursor.fetchone()
             print(uid)
-            print(data)
+            # print(data)
         except Exception as e :
             print(e)
         else :
@@ -412,8 +426,8 @@ class busyThread(QObject) :
     trackProgress function emits the percentage completed which will be displayed in the progress bar.
 
     '''
-    def trackProgress(self, percent) :
-        self.frameProgress.emit(int(percent*100))
+    def trackProgress(self, percent, train) :
+        self.frameProgress.emit(int(percent*100), train)
 
     '''
     contourDetect function accepts the background subtracted image and finds the contour with maximum size (which will be the human figure).
