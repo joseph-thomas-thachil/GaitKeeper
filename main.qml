@@ -172,8 +172,8 @@ ApplicationWindow {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 implicitHeight: parent.height - 20
-                implicitWidth: 2 * parent.width / 3 - 24
-                anchors.margins: 8
+                implicitWidth: 2 * parent.width / 3 - 30
+                anchors.margins: 10
                 contentItem: Rectangle {
                     anchors.fill: parent
                     color: bgcolor
@@ -420,7 +420,7 @@ ApplicationWindow {
                 anchors.left: welcome.right
                 implicitHeight: parent.height - 20
                 implicitWidth: parent.width / 3
-                anchors.margins: 8
+                anchors.margins: 10
                 contentItem: Rectangle {
                     anchors.fill: parent
                     color: "#2e2f31"
@@ -450,369 +450,30 @@ ApplicationWindow {
 
         Item {
             id: registerPage
-            Rectangle {
-                id: rskelblock
-                color: "#01579b"
-                implicitWidth: root.width / 90
-                implicitHeight: root.height / 7
-                anchors.left: parent.left
+
+            Pane {
+                id: regworkPane
                 anchors.top: parent.top
-                anchors.margins: 10
-
-                Label {
-                    id: rskeltext
-                    color: "#b3e5fc"
-                    text: qsTr("G\nA\nI\nT")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
-                    anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            Rectangle {
-                id: rskelside
-                color: "#01579b"
-                implicitWidth: 5
-                implicitHeight: rskelvideo.height - rskelblock.y - rskelblock.height + 20
-                anchors.right: rskelblock.right
-                anchors.top: rskelblock.bottom
-            }
-
-            Rectangle {
-                id: rskeltop
-                color: "#01579b"
-                implicitWidth: root.width / 2 + 5
-                implicitHeight: 5
-                anchors.top: parent.top
-                anchors.left: rskelblock.right
-                anchors.topMargin: 10
-            }
-
-            Video {
-                id:rskelvideo
-                implicitWidth: root.width / 2
-                implicitHeight: root.height / 3 - 10
-                anchors.left: rskelblock.right
-                anchors.top: rskelblock.top
-                anchors.margins: 5
-                anchors.leftMargin: 0
-                fillMode: 0
-                autoPlay: true
-                source: ""
-            }
-
-            Label {
-                id: rskeldef
-                anchors.fill: rskelvideo
-                color: "#b3e5fc"
-                text: qsTr("No preview Available")
-                font.family: customFont.name
-                font.pointSize: 16
-                fontSizeMode: Text.Fit
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Rectangle {
-                id: rdetectblock
-                color: "#01579b"
-                implicitWidth: root.width / 90
-                implicitHeight: root.height / 7
                 anchors.left: parent.left
-                anchors.top: rskelvideo.bottom
                 anchors.margins: 10
-
-                Label {
-                    id: rdetecttext
-                    color: "#b3e5fc"
-                    text: qsTr("D\nE\nT\nE\nC\nT")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
+                implicitHeight: parent.height - 20
+                implicitWidth: parent.width / 3
+                contentItem: Rectangle {
                     anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Video {
-                id: rdetectvideo
-                implicitWidth: root.width / 2
-                implicitHeight: root.height / 3 - 10
-                anchors.left: rdetectblock.right
-                anchors.top: rdetectblock.top
-                anchors.margins: 5
-                anchors.leftMargin: 0
-                fillMode: 0
-                autoPlay: true
-                source: ""
-            }
-
-
-            Label {
-                id: rdetectdef
-                anchors.fill: rdetectvideo
-                color: "#b3e5fc"
-                text: qsTr("No preview Available")
-                font.family: customFont.name
-                font.pointSize: 16
-                fontSizeMode: Text.Fit
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Rectangle {
-                id: rdetectside
-                color: "#01579b"
-                implicitWidth: 5
-                implicitHeight: rdetectvideo.height - rdetectblock.height + 10
-                anchors.right: rdetectblock.right
-                anchors.top: rdetectblock.bottom
-            }
-
-            Rectangle {
-                id: rdetecttop
-                color: "#01579b"
-                implicitWidth: root.width / 2 + 5
-                implicitHeight: 5
-                anchors.top: rdetectblock.top
-                anchors.left: rdetectblock.right
-            }
-
-            Rectangle {
-                id: roriginalblock
-                color: "#01579b"
-                implicitWidth: root.width / 90
-                implicitHeight: (root.height - rdetectvideo.y - rdetectvideo.height - 20)/2
-                anchors.left: parent.left
-                anchors.top: rdetectvideo.bottom
-                anchors.margins: 10
-
-                Label {
-                    id: roriginaltext
-                    color: "#b3e5fc"
-                    text: qsTr("O\nR\nI\nG\nI\nN\nA\nL")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
-                    anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Video {
-                id:roriginalvideo
-                implicitWidth: root.width / 3
-                implicitHeight: root.height - rdetectvideo.y - rdetectvideo.height - 30
-                anchors.left: roriginalblock.right
-                anchors.top: roriginalblock.top
-                anchors.margins: 5
-                anchors.leftMargin: 0
-                fillMode: 0
-                autoPlay: true
-                source: ""
-            }
-
-
-            Label {
-                id: roriginaldef
-                anchors.fill: roriginalvideo
-                color: "#b3e5fc"
-                text: qsTr("No preview Available")
-                font.family: customFont.name
-                font.pointSize: 16
-                fontSizeMode: Text.Fit
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Rectangle {
-                id: roriginalside
-                color: "#01579b"
-                implicitWidth: 5
-                implicitHeight: roriginalvideo.height - roriginalblock.height + 10
-                anchors.right: roriginalblock.right
-                anchors.top: roriginalblock.bottom
-            }
-
-            Rectangle {
-                id: roriginaltop
-                color: "#01579b"
-                implicitWidth: roriginalvideo.width + 5
-                implicitHeight: 5
-                anchors.top: roriginalblock.top
-                anchors.left: roriginalblock.right
-            }
-
-            Button {
-                id: rstart
-                implicitWidth: root.width / 7
-                implicitHeight: root.height / 20
-                anchors.right: imgUpload.left
-                anchors.top: roriginalvideo.top
-                anchors.rightMargin: 30
-                contentItem: Text {
-                    text: qsTr("REGISTER")
-                    fontSizeMode: Text.Fit
-                    id: rstarttext
-                    font.family: customFont.name
-                    color: "#01579b"
-                    font.pointSize: 24
-                    opacity: enabled ? 1.0 : 0.3
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
-                background: Rectangle {
-                    implicitWidth: 223
-                    implicitHeight: 48
-                    opacity: 0
-                }
-
-                ToolTip {
-                    id: rstartTip
-                    text : qsTr("Add the person to the database and save his/her gait features.")
-                    delay: 1000
-                    timeout: 3000
-                    visible: rstart.hovered
-                    contentItem: Text {
-                        text: rstartTip.text
-                        font.family: customFont.name
-                        color: "silver"
-                    }
-                    background: Rectangle {
-                        color: "black"
-                        opacity: 0.7
-                        radius: 5
-                    }
-                }
-
-                onClicked: {
-                    if ((userid.length > 0 ) && (username.length > 0) && (userpos.length > 0) && (userclr.length > 0) && (upimg.source != "")) {
-
-
-                        videoanalyze.processDatabase(userid.text, username.text, userpos.text, userclr.text, fileDialog.fileUrl)
-                        console.log(userid.text)
-                    }
-                    else {
-                        rcacheText.text = "Fill ALL fields and then press START"
-                        rcacheText.visible = true
-                        rcacheTimer.start()
-                    }
-                    unauth.visible = false
-                    mugshot.source = ""
-                    mugshotdef.visible = true
-                    detailsdef.text = "No Preview Available"
-                }
-
-                Glow {
-                        anchors.fill: rstarttext
-                        id: rstartglow
-                        radius: 8
-                        samples: 17
-                        color: "#b3e5fc"
-                        source: rstarttext
-                        visible: false
-                    }
-
-                onHoveredChanged: hovered ? rstartglow.visible=true : rstartglow.visible=false
-            }
-
-
-
-                Button {
-                    id: rclearCache
-                    implicitWidth: rstart.width
-                    implicitHeight: rstart.height
-                    anchors.right: rstart.right
-                    anchors.top: rprogressBar.bottom
-                    anchors.topMargin: 40
-                    contentItem: Text {
-                        text: qsTr("CLEAR CACHE")
-                        fontSizeMode: Text.Fit
-                        id: rcachetext
-                        font.family: customFont.name
-                        color: "#01579b"
-                        font.pointSize: 24
-                        opacity: enabled ? 1.0 : 0.3
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-                    background: Rectangle {
-                        implicitWidth: 223
-                        implicitHeight: 48
-                        opacity: 0
-                    }
-
-                    ToolTip {
-                        id: rcacheTip
-                        text : qsTr("Clear the 'cache' directory.")
-                        delay: 1000
-                        timeout: 3000
-                        visible: rclearCache.hovered
-                        contentItem: Text {
-                            text: rcacheTip.text
-                            font.family: customFont.name
-                            color: "silver"
-                        }
-                        background: Rectangle {
-                            color: "black"
-                            opacity: 0.7
-                            radius: 5
-                        }
-                    }
-
-                    onClicked: {
-                        rclearCache.enabled = false
-                        rstart.enabled = false
-                        videoanalyze.clearprocess()
-                    }
-
-                    Glow {
-                            anchors.fill: rcachetext
-                            id: rcacheglow
-                            radius: 8
-                            samples: 17
-                            color: "#b3e5fc"
-                            source: rcachetext
-                            visible: false
-                        }
-
-                    onHoveredChanged: hovered ? rcacheglow.visible=true : rcacheglow.visible=false
-
-                }
-
-                Label {
-                    id: rcacheText
-                    visible: false
-                    width: rclearCache.width / 2
-                    height: rclearCache.height / 4
-                    color: "#ff1a00"
-                    anchors.left: rstart.left
-                    anchors.top: rclearCache.bottom
-                    anchors.topMargin: 2
-                    font.family: customFont.name
-                    text: qsTr("CACHE CLEARED!")
-                    font.pointSize: 9
-
-                }
-
-                Timer {
-                    id: rcacheTimer
-                    interval: 5000
-                    onTriggered: (rcacheText.visible=false) && (rcacheText.text = "CACHE CLEARED!")
+                    color: bgcolor
                 }
 
                 Text {
                     id: infoData
                     width: userid.width
                     height: userid.height
-                    x: root.width - 10 - infoData.width
+//                        x: root.width - 10 - infoData.width
                     text: qsTr("Profile")
                     font.family: customFont.name
                     font.pointSize: 22
-                    color: "#01579b"
-                    anchors.top: rskelblock.top
+                    color: "silver"
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
                 }
 
                 Text {
@@ -823,22 +484,25 @@ ApplicationWindow {
                     text: qsTr("UserID")
                     font.family: customFont.name
                     font.pointSize: 14
-                    color: "#01579b"
+                    color: "silver"
                 }
+
                 TextField {
                   id: userid
-                  anchors.top: rskelblock.top
-                  implicitWidth: root.width / 4
-                  x: root.width - 10 - userid.width
+                  anchors.top: infoData.bottom
+                  anchors.right: parent.right
+                  implicitWidth: root.width / 5
+//                      x: root.width - 10 - userid.width
+                  anchors.rightMargin: 10
                   anchors.topMargin: 50
-                  color: "#b3e5fc"
+                  color: "silver"
                   background: Rectangle {
                       id: uidFrame
                       implicitWidth: 223
                       implicitHeight: 48
-                      color: "#00000000"
+                      color: fgcolor
                       border.width: 1
-                      border.color: "#01579b"
+                      border.color: fgcolor
                   }
                }
 
@@ -850,22 +514,22 @@ ApplicationWindow {
                     text: qsTr("Name")
                     font.family: customFont.name
                     font.pointSize: 14
-                    color: "#01579b"
+                    color: "silver"
                 }
                 TextField {
                   id: username
                   anchors.top: userid.bottom
-                  implicitWidth: root.width / 4
+                  implicitWidth: root.width / 5
                   anchors.left: userid.left
                   anchors.topMargin: 20
-                  color: "#b3e5fc"
+                  color: "silver"
                   background: Rectangle {
                       id: unameFrame
                       implicitWidth: 223
                       implicitHeight: 48
-                      color: "#00000000"
+                      color: fgcolor
                       border.width: 1
-                      border.color: "#01579b"
+                      border.color: fgcolor
                   }
                }
 
@@ -877,22 +541,22 @@ ApplicationWindow {
                     text: qsTr("Position")
                     font.family: customFont.name
                     font.pointSize: 14
-                    color: "#01579b"
+                    color: "silver"
                 }
                 TextField {
                   id: userpos
                   anchors.top: username.bottom
-                  implicitWidth: root.width / 4
+                  implicitWidth: root.width / 5
                   anchors.left: username.left
                   anchors.topMargin: 20
-                  color: "#b3e5fc"
+                  color: "silver"
                   background: Rectangle {
                       id: uposFrame
                       implicitWidth: 223
                       implicitHeight: 48
-                      color: "#00000000"
+                      color: fgcolor
                       border.width: 1
-                      border.color: "#01579b"
+                      border.color: fgcolor
                   }
                }
 
@@ -904,47 +568,50 @@ ApplicationWindow {
                     text: qsTr("Clearance Level")
                     font.family: customFont.name
                     font.pointSize: 14
-                    color: "#01579b"
+                    color: "silver"
                 }
                 TextField {
                   id: userclr
                   anchors.top: userpos.bottom
-                  implicitWidth: root.width / 4
+                  implicitWidth: root.width / 5
                   anchors.left: userpos.left
                   anchors.topMargin: 20
-                  color: "#b3e5fc"
+                  color: "silver"
                   background: Rectangle {
                       id: uclrFrame
                       implicitWidth: 223
                       implicitHeight: 48
-                      color: "#00000000"
+                      color: fgcolor
                       border.width: 1
-                      border.color: "#01579b"
+                      border.color: fgcolor
                   }
                }
                 Button {
                     id: imgUpload
-                    implicitWidth: root.width / 8
+                    implicitWidth: root.width / 10
                     implicitHeight: usertext.height * 2
                     anchors.right: imgframe.left
                     anchors.top: cleartext.bottom
                     anchors.topMargin: 90
+                    anchors.rightMargin: 10
                     contentItem: Text {
-                        text: qsTr("PHOTO UPLOAD")
+                        text: qsTr("Add Photo")
                         fontSizeMode: Text.Fit
                         id: imgtext
                         font.family: customFont.name
-                        color: "#01579b"
-                        font.pointSize: 24
+                        color: "white"
+                        font.pointSize: 16
                         opacity: enabled ? 1.0 : 0.3
-                        horizontalAlignment: Text.AlignRight
+                        horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
                     }
                     background: Rectangle {
+                        id: imgbg
                         implicitWidth: 223
                         implicitHeight: 48
-                        opacity: 0
+                        color: "#3476d4"
+                        radius: 2
                     }
 
                     ToolTip {
@@ -982,7 +649,7 @@ ApplicationWindow {
                             visible: false
                         }
 
-                    onHoveredChanged: hovered ? imgglow.visible=true : imgglow.visible=false
+                    onHoveredChanged: hovered ? imgbg.color="#4286f4" : imgbg.color="#3476d4"
 
                 }
 
@@ -999,19 +666,6 @@ ApplicationWindow {
                         anchors.fill: parent
                         source: ""
                     }
-                }
-
-
-                Label {
-                    id: imgdef
-                    anchors.fill: imgframe
-                    color: "#b3e5fc"
-                    text: qsTr("No preview Available")
-                    font.family: customFont.name
-                    font.pointSize: 16
-                    fontSizeMode: Text.Fit
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
                 }
 
                 FileDialog {
@@ -1036,129 +690,625 @@ ApplicationWindow {
                     Component.onCompleted: visible = false
                 }
 
-                ProgressBar {
-                    id: rprogressBar
-                    value: 0.0
-                    padding: 2
-                    implicitWidth: rstart.width
-                    anchors.right: rstart.right
-                    anchors.top: rstart.bottom
+
+            }
+
+            Pane {
+                id: regvidPane
+                visible: false
+                anchors.top: parent.top
+                anchors.left: regworkPane.right
+                anchors.margins: 10
+                implicitHeight: parent.height - 20
+                implicitWidth: 2 * parent.width / 3 - 30
+                contentItem: Rectangle {
+                    anchors.fill: parent
+                    color: bgcolor
+                }
+
+                Rectangle {
+                    id: rskelblock
+                    color: "gray"
+                    implicitWidth: root.width / 90
+                    implicitHeight: root.height / 7
+                    anchors.left: parent.left
+                    anchors.top: roriginalside.bottom
+                    anchors.margins: 10
+
+                    Label {
+                        id: rskeltext
+                        color: "silver"
+                        text: qsTr("G\nA\nI\nT")
+                        font.family: customFont.name
+                        fontSizeMode: Text.VerticalFit
+                        font.pointSize: 10
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Rectangle {
+                    id: rskelside
+                    color: "gray"
+                    implicitWidth: 5
+                    implicitHeight: rskelvideo.height - rskelblock.height + 20
+                    anchors.right: rskelblock.right
+                    anchors.top: rskelblock.bottom
+                }
+
+                Rectangle {
+                    id: rskeltop
+                    color: "gray"
+                    implicitWidth: parent.width / 2 - 35
+                    implicitHeight: 5
+                    anchors.top: rskelblock.top
+                    anchors.left: rskelblock.right
+                }
+
+                Video {
+                    id:rskelvideo
+                    implicitWidth: parent.width / 2 - 40
+                    implicitHeight: parent.height / 2 - 20
+                    anchors.left: rskelblock.right
+                    anchors.top: rskelblock.top
+                    anchors.margins: 5
+                    anchors.leftMargin: 0
+                    fillMode: 0
+                    autoPlay: true
+                    source: ""
+                }
+
+                Rectangle {
+                    id: rdetectblock
+                    color: "gray"
+                    implicitWidth: root.width / 90
+                    implicitHeight: root.height / 7
+                    anchors.left: rskelvideo.right
+                    anchors.top: rskeltop.top
+                    anchors.leftMargin: 10
+
+                    Label {
+                        id: rdetecttext
+                        color: "silver"
+                        text: qsTr("D\nE\nT\nE\nC\nT")
+                        font.family: customFont.name
+                        fontSizeMode: Text.VerticalFit
+                        font.pointSize: 10
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Video {
+                    id: rdetectvideo
+                    implicitWidth: parent.width / 2 - 40
+                    implicitHeight: parent.height / 2 - 20
+                    anchors.left: rdetectblock.right
+                    anchors.top: rdetectblock.top
+                    anchors.margins: 5
+                    anchors.leftMargin: 0
+                    fillMode: 0
+                    autoPlay: true
+                    source: ""
+                }
+
+                Rectangle {
+                    id: rdetectside
+                    color: "gray"
+                    implicitWidth: 5
+                    implicitHeight: rdetectvideo.height - rdetectblock.height + 20
+                    anchors.right: rdetectblock.right
+                    anchors.top: rdetectblock.bottom
+                }
+
+                Rectangle {
+                    id: rdetecttop
+                    color: "gray"
+                    implicitWidth: parent.width / 2 - 35
+                    implicitHeight: 5
+                    anchors.top: rdetectblock.top
+                    anchors.left: rdetectblock.right
+                }
+
+                Rectangle {
+                    id: roriginalblock
+                    color: "gray"
+                    implicitWidth: root.width / 90
+                    implicitHeight: roriginalvideo.height / 2
+                    anchors.right: parent.right
+                    anchors.top: parent.top
                     anchors.topMargin: 10
-                    visible: false
-                    background: Rectangle {
-                        implicitWidth: 223
-                        implicitHeight: 9
-                        color: "#00000000"
-                        radius: 3
-                    }
+                    anchors.rightMargin: roriginalvideo.width + 20
 
-                    contentItem: Item {
-                        implicitWidth: 200
-                        implicitHeight: 4
-
-                        Rectangle {
-                            width: rprogressBar.visualPosition * parent.width
-                            height: parent.height
-                            radius: 2
-                            color: "#01579b"
-                        }
+                    Label {
+                        id: roriginaltext
+                        color: "silver"
+                        text: qsTr("O\nR\nI\nG\nI\nN\nA\nL")
+                        font.family: customFont.name
+                        fontSizeMode: Text.VerticalFit
+                        font.pointSize: 10
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
-
-            Connections {
-                target: videoanalyze
-
-                onProcessStatus: {
-                    rprogressBar.value=val/100
-                }
-
-                onProcessCompleted: {
-                    rprogressBar.visible=false
-                    rstart.enabled = true
-                    rclearCache.enabled = true
-                    rdetectvideo.source="cache/detect.avi"
-                    roriginalvideo.source="cache/original.avi"
-                    rskelvideo.source="cache/skel.avi"
-                    rskelvideo.z = 1
-                    rdetectvideo.z = 1
-                    roriginalvideo.z = 1
-                }
-
-
-                onCacheCompleted: {
-                    rclearCache.enabled = true
-                    rstart.enabled = true
-                    rcacheText.visible = true
-                    rcacheTimer.start()
-                }
-
-                onDbError: {
-                    if(errstat == 0) {
-                        rprogressBar.visible = true
-                        rdetectvideo.source = ""
-                        roriginalvideo.source = ""
-                        rskelvideo.source = ""
-                        rprogressBar.value = 0.0
-                        rstart.enabled = false
-                        rclearCache.enabled = false
-                        videoanalyze.process(true, userid.text)
-                    }
-                    else {
-                        rcacheText.text = "UserID is already taken!"
-                        rcacheText.visible = true
-                        rcacheTimer.start()
-                        userid.text = ""
-                        username.text = ""
-                        userpos.text = ""
-                        userclr.text = ""
-                        upimg.source = ""
-                        imgdef.visible = true
+                Video {
+                    id:roriginalvideo
+                    implicitWidth: parent.width / 2 - 35
+                    implicitHeight: parent.height / 2 - 40
+                    anchors.left: roriginalblock.right
+                    anchors.top: roriginalblock.top
+                    anchors.margins: 5
+                    anchors.leftMargin: 0
+                    fillMode: 0
+                    autoPlay: true
+                    source: ""
+                    onStopped: {
+                        regvidPaneAlt.visible = true
+                        regvidPane.visible = false
+                        rstart.enabled = true
+                        rclearCache.enabled = true
+                        imgUpload.enabled = true
                     }
                 }
 
-                onIdError: {
-                    uidFrame.border.color = "#ff1a00"
-                    usertext.color = "#ff1a00"
-                    rcacheText.text = "ID should contain only digits"
-                    rcacheText.visible = true
-                    rcacheTimer.start()
+                Rectangle {
+                    id: roriginalside
+                    color: "gray"
+                    implicitWidth: 5
+                    implicitHeight: roriginalvideo.height - roriginalblock.height + 10
+                    anchors.right: roriginalblock.right
+                    anchors.top: roriginalblock.bottom
                 }
 
-                onNameError: {
-                    unameFrame.border.color = "#ff1a00"
-                    nametext.color = "#ff1a00"
-                    rcacheText.text = "Name should contain only alphabets"
-                    rcacheText.visible = true
-                    rcacheTimer.start()
+                Rectangle {
+                    id: roriginaltop
+                    color: "gray"
+                    implicitWidth: roriginalvideo.width + 5
+                    implicitHeight: 5
+                    anchors.top: roriginalblock.top
+                    anchors.left: roriginalblock.right
                 }
 
-                onPosError: {
-                    uposFrame.border.color = "#ff1a00"
-                    placetext.color = "#ff1a00"
-                    rcacheText.text = "Position should contain only alphabets"
-                    rcacheText.visible = true
-                    rcacheTimer.start()
-                }
-
-                onClrError: {
-                    uclrFrame.border.color = "#ff1a00"
-                    cleartext.color = "#ff1a00"
-                    rcacheText.text = "Clearance should contain only digits"
-                    rcacheText.visible = true
-                    rcacheTimer.start()
-                }
-
-                onDbSuccess: {
-                    uidFrame.border.color = "#01579b"
-                    usertext.color = "#01579b"
-                    unameFrame.border.color = "#01579b"
-                    nametext.color = "#01579b"
-                    uposFrame.border.color = "#01579b"
-                    placetext.color = "#01579b"
-                    uclrFrame.border.color = "#01579b"
-                    cleartext.color = "#01579b"
+                Label {
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.margins: 20
+                    font.family: customFont.name
+                    textFormat: Text.RichText
+                    font.pointSize: 16
+                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    color: "gray"
                 }
             }
+
+            Pane {
+                id: regvidPaneAlt
+                anchors.top: parent.top
+                anchors.left: regworkPane.right
+                anchors.margins: 10
+                implicitHeight: parent.height - 20
+                implicitWidth: 2 * parent.width / 3 - 30
+                contentItem: Rectangle {
+                    anchors.fill: parent
+                    color: bgcolor
+                }
+
+                Label {
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.margins: 20
+                    font.family: customFont.name
+                    textFormat: Text.RichText
+                    font.pointSize: 16
+                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    color: "gray"
+                }
+
+                Button {
+                    id: rstart
+                    implicitWidth: root.width / 7
+                    implicitHeight: root.height / 20
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.leftMargin: regvidPaneAlt.width / 2 - root.width / 14
+                    anchors.topMargin: regvidPaneAlt.height / 2 - root.height / 40
+                    contentItem: Text {
+                        text: qsTr("Register")
+                        fontSizeMode: Text.Fit
+                        id: rstarttext
+                        font.family: customFont.name
+                        color: "white"
+                        font.pointSize: 16
+                        opacity: enabled ? 1.0 : 0.3
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    background: Rectangle {
+                        id: rstartRect
+                        implicitWidth: 223
+                        implicitHeight: 48
+                        color: "#3476d4"
+                        radius: 2
+                    }
+
+                    ToolTip {
+                        id: rstartTip
+                        text : qsTr("Add the person to the database and save his/her gait features.")
+                        delay: 1000
+                        timeout: 3000
+                        visible: rstart.hovered
+                        contentItem: Text {
+                            text: rstartTip.text
+                            font.family: customFont.name
+                            color: "silver"
+                        }
+                        background: Rectangle {
+                            color: "black"
+                            opacity: 0.7
+                            radius: 5
+                        }
+                    }
+
+                    onClicked: {
+
+                        if ((userid.length > 0 ) && (username.length > 0) && (userpos.length > 0) && (userclr.length > 0) && (upimg.source != "")) {
+
+                            vidDialog.visible = true
+                            imgUpload.enabled = false
+                        }
+                        else {
+                            rcacheText.text = "Fill ALL fields and then press Register"
+                            rcacheText.visible = true
+                            rcacheTimer.start()
+                        }
+                        unauth.visible = false
+                        mugshot.source = ""
+                        mugshotdef.visible = true
+                    }
+
+                    Glow {
+                            anchors.fill: rstarttext
+                            id: rstartglow
+                            radius: 8
+                            samples: 17
+                            color: "#b3e5fc"
+                            source: rstarttext
+                            visible: false
+                        }
+
+                    onHoveredChanged: hovered ? rstartRect.color="#4286f4" : rstartRect.color="#3476d4"
+                }
+
+
+
+                    Button {
+                        id: rclearCache
+                        implicitWidth: rstart.width
+                        implicitHeight: rstart.height
+                        anchors.right: rstart.right
+                        anchors.top: rprogressBar.bottom
+                        anchors.topMargin: 40
+                        contentItem: Text {
+                            text: qsTr("Clear Cache")
+                            fontSizeMode: Text.Fit
+                            id: rcachetext
+                            font.family: customFont.name
+                            color: "white"
+                            font.pointSize: 16
+                            opacity: enabled ? 1.0 : 0.3
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                        }
+                        background: Rectangle {
+                            id: rcacheRect
+                            implicitWidth: 223
+                            implicitHeight: 48
+                            color: "#3476d4"
+                            radius: 2
+                        }
+
+                        ToolTip {
+                            id: rcacheTip
+                            text : qsTr("Clear the 'cache' directory.")
+                            delay: 1000
+                            timeout: 3000
+                            visible: rclearCache.hovered
+                            contentItem: Text {
+                                text: rcacheTip.text
+                                font.family: customFont.name
+                                color: "silver"
+                            }
+                            background: Rectangle {
+                                color: "black"
+                                opacity: 0.7
+                                radius: 5
+                            }
+                        }
+
+                        onClicked: {
+                            rclearCache.enabled = false
+                            rstart.enabled = false
+                            imgUpload.enabled = false
+                            videoanalyze.clearprocess()
+                        }
+
+                        Glow {
+                                anchors.fill: rcachetext
+                                id: rcacheglow
+                                radius: 8
+                                samples: 17
+                                color: "#b3e5fc"
+                                source: rcachetext
+                                visible: false
+                            }
+
+                    onHoveredChanged: hovered ? rcacheRect.color="#4286f4" : rcacheRect.color="#3476d4"
+
+                    }
+
+                    Label {
+                        id: rcacheText
+                        visible: false
+                        width: rclearCache.width / 2
+                        height: rclearCache.height / 4
+                        color: "#ff1a00"
+                        anchors.left: rstart.left
+                        anchors.top: rclearCache.bottom
+                        anchors.topMargin: 2
+                        font.family: customFont.name
+                        text: qsTr("CACHE CLEARED!")
+                        font.pointSize: 9
+
+                    }
+
+                    Timer {
+                        id: rcacheTimer
+                        interval: 5000
+                        onTriggered: (rcacheText.visible=false) && (rcacheText.text = "CACHE CLEARED!")
+                    }
+
+                    ProgressBar {
+                        id: rprogressBar
+                        value: 0.0
+                        padding: 2
+                        implicitWidth: rstart.width
+                        anchors.right: rstart.right
+                        anchors.top: rstart.bottom
+                        anchors.topMargin: 10
+                        visible: false
+                        background: Rectangle {
+                            implicitWidth: 223
+                            implicitHeight: 9
+                            color: "#00000000"
+                            radius: 3
+                        }
+
+                        contentItem: Item {
+                            implicitWidth: 200
+                            implicitHeight: 4
+
+                            Rectangle {
+                                width: rprogressBar.visualPosition * parent.width
+                                height: parent.height
+                                radius: 2
+                                color: "#01579b"
+                            }
+                        }
+                    }
+
+            }
+
+
+                Popup {
+                    id: regConfirm
+                    implicitHeight: root.height / 3
+                    implicitWidth:  root.width / 4
+                    x: 3 * root.width / 8
+                    y: root.height / 3 - mainHeader.height - 10
+                    modal: true
+                    focus: true
+                    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+                    background: Rectangle {
+                        anchors.fill: parent
+                        color: "black"
+                        opacity: 0.7
+                        radius: 8
+                    }
+
+                    Label {
+                        anchors.fill: parent
+                        anchors.bottomMargin: parent.height / 3
+                        wrapMode: Text.WordWrap
+                        font.family: customFont.name
+                        font.pointSize: 16
+                        color: "silver"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Register "+ username.text +  " with the Video from: "+ vidDialog.fileUrls+ " ?")
+                    }
+
+                    Button {
+                        id: confirm
+                        implicitHeight: parent.height / 4 - 20
+                        implicitWidth: parent.width / 2 - 20
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        contentItem: Text {
+                            text: qsTr("\uf00c Confirm")
+                            color: "white"
+                            font.family: iconFont.name, customFont.name
+                            font.pointSize: 16
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        background: Rectangle {
+                            id: confirmRect
+                            anchors.fill: parent
+                            color: "green"
+                            radius: 2
+                        }
+
+                        onClicked: {
+                            regConfirm.close()
+                            videoanalyze.processDatabase(userid.text, username.text, userpos.text, userclr.text, fileDialog.fileUrl)
+                        }
+
+                        onHoveredChanged: hovered ? confirmRect.color="forestgreen" : confirmRect.color="green"
+                    }
+
+                    Button {
+                        id: cancel
+                        implicitHeight: parent.height / 4 - 20
+                        implicitWidth: parent.width / 2 - 20
+                        anchors.bottom: parent.bottom
+                        anchors.right: parent.right
+                        contentItem: Text {
+                            text: qsTr("\uf00d Cancel")
+                            color: "white"
+                            font.family: iconFont.name, customFont.name
+                            font.pointSize: 16
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        background: Rectangle {
+                            id: cancelRect
+                            anchors.fill: parent
+                            color: "red"
+                            radius: 2
+                        }
+
+                        onClicked: {
+                            regConfirm.close()
+                        }
+
+                        onHoveredChanged: hovered ? cancelRect.color="crimson" : cancelRect.color="red"
+                    }
+
+                    FileDialog {
+                        id: vidDialog
+                        title: "Please choose a video file"
+                        folder: shortcuts.home
+                        nameFilters: ["Video Files (*.mp4)"]
+                        onAccepted: {
+                            console.log("You chose: " + vidDialog.fileUrls)
+                            rclearCache.enabled = true
+                            rstart.enabled = true
+                            imgUpload.enabled = true
+                            vidDialog.visible = false
+                            regConfirm.open()
+                        }
+                        onRejected: {
+                            console.log("Canceled")
+                            rclearCache.enabled = true
+                            rstart.enabled = true
+                            imgUpload.enabled = true
+                            vidDialog.visible = false
+                        }
+                        Component.onCompleted: visible = false
+                    }
+                }
+
+
+                Connections {
+                    target: videoanalyze
+
+                    onProcessStatus: {
+                        rprogressBar.value=val/100
+                    }
+
+                    onProcessCompleted: {
+                        rprogressBar.visible=false
+                        regvidPaneAlt.visible=false
+                        regvidPane.visible=true
+                        rdetectvideo.source="cache/detect.avi"
+                        roriginalvideo.source="cache/original.avi"
+                        rskelvideo.source="cache/skel.avi"
+                        rskelvideo.z = 1
+                        rdetectvideo.z = 1
+                        roriginalvideo.z = 1
+                    }
+
+
+                    onCacheCompleted: {
+                        rclearCache.enabled = true
+                        rstart.enabled = true
+                        rcacheText.visible = true
+                        imgUpload.enabled = true
+                        rcacheTimer.start()
+                    }
+
+                    onDbError: {
+                        if(errstat == 0) {
+                            rprogressBar.visible = true
+                            rdetectvideo.source = ""
+                            roriginalvideo.source = ""
+                            rskelvideo.source = ""
+                            rprogressBar.value = 0.0
+                            rstart.enabled = false
+                            rclearCache.enabled = false
+                            imgUpload.enabled = false
+                            videoanalyze.process(true, userid.text, vidDialog.fileUrl)
+                        }
+                        else {
+                            rcacheText.text = "UserID is already taken!"
+                            rcacheText.visible = true
+                            rcacheTimer.start()
+                            userid.text = ""
+                            username.text = ""
+                            userpos.text = ""
+                            userclr.text = ""
+                            upimg.source = ""
+                            imgdef.visible = true
+                        }
+                    }
+
+                    onIdError: {
+                        uidFrame.border.color = "#ff1a00"
+                        usertext.color = "#ff1a00"
+                        rcacheText.text = "ID should contain only digits"
+                        rcacheText.visible = true
+                        rcacheTimer.start()
+                    }
+
+                    onNameError: {
+                        unameFrame.border.color = "#ff1a00"
+                        nametext.color = "#ff1a00"
+                        rcacheText.text = "Name should contain only alphabets"
+                        rcacheText.visible = true
+                        rcacheTimer.start()
+                    }
+
+                    onPosError: {
+                        uposFrame.border.color = "#ff1a00"
+                        placetext.color = "#ff1a00"
+                        rcacheText.text = "Position should contain only alphabets"
+                        rcacheText.visible = true
+                        rcacheTimer.start()
+                    }
+
+                    onClrError: {
+                        uclrFrame.border.color = "#ff1a00"
+                        cleartext.color = "#ff1a00"
+                        rcacheText.text = "Clearance should contain only digits"
+                        rcacheText.visible = true
+                        rcacheTimer.start()
+                    }
+
+                    onDbSuccess: {
+                        uidFrame.border.color = "#01579b"
+                        usertext.color = "#01579b"
+                        unameFrame.border.color = "#01579b"
+                        nametext.color = "#01579b"
+                        uposFrame.border.color = "#01579b"
+                        placetext.color = "#01579b"
+                        uclrFrame.border.color = "#01579b"
+                        cleartext.color = "#01579b"
+                    }
+                }
         }
 
         Item {
