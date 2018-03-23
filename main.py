@@ -59,8 +59,8 @@ class processWindow(QObject) :
     releaseSignal = pyqtSignal(str, arguments=['releaseText'])
     guideSignal = pyqtSignal(str, arguments=['guideText'])
 
-    @pyqtSlot(bool, str)
-    def process(self, train, uid) :
+    @pyqtSlot(bool, str, str)
+    def process(self, train, uid, url) :
         self.busy = busyThread()
         self.thread = QThread(self)
         self.busy.threadCompleted.connect(self.done)
@@ -72,7 +72,7 @@ class processWindow(QObject) :
         self.busy.unauthVerify.connect(self.unauthorized)
 
         self.busy.moveToThread(self.thread)
-        self.thread.started.connect(partial(self.busy.do_work, train, uid))
+        self.thread.started.connect(partial(self.busy.do_work, train, uid, url))
         self.thread.start()
 
     @pyqtSlot()
@@ -226,8 +226,8 @@ class busyThread(QObject) :
     After processing, the extracted features are written to a CSV file. In case of Registration, the file name will be uid.csv and in case of Verification, it will be test.csv.
     
     '''
-    def do_work(self, train, uid) :
-        self.cap = cv2.VideoCapture("sources/sample.mp4")
+    def do_work(self, train, uid, url) :
+        self.cap = cv2.VideoCapture(url)
         print(uid)
 
         self.kernel = np.ones((3, 3), np.uint8)
