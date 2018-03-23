@@ -874,11 +874,15 @@ ApplicationWindow {
                 Label {
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    anchors.margins: 20
+                    anchors.right: parent.right
+                    anchors.topMargin: 20
+                    anchors.rightMargin: parent.width / 2 + 40
                     font.family: customFont.name
                     textFormat: Text.RichText
+                    wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
+<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
                     color: "gray"
                 }
             }
@@ -898,11 +902,15 @@ ApplicationWindow {
                 Label {
                     anchors.left: parent.left
                     anchors.top: parent.top
-                    anchors.margins: 20
+                    anchors.right: parent.right
+                    anchors.topMargin: 20
+                    anchors.rightMargin: parent.width / 2 + 40
                     font.family: customFont.name
                     textFormat: Text.RichText
+                    wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
+<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
                     color: "gray"
                 }
 
@@ -1033,6 +1041,11 @@ ApplicationWindow {
                             rclearCache.enabled = false
                             rstart.enabled = false
                             imgUpload.enabled = false
+                            upimg.source = ""
+                            userid.text = ""
+                            username.text = ""
+                            userpos.text = ""
+                            userclr.text = ""
                             videoanalyze.clearprocess()
                         }
 
@@ -1216,14 +1229,17 @@ ApplicationWindow {
                 Connections {
                     target: videoanalyze
 
-                    onProcessStatus: {
+                    onTrainStatus: {
                         rprogressBar.value=val/100
                     }
 
-                    onProcessCompleted: {
+                    onTrainCompleted: {
                         rprogressBar.visible=false
                         regvidPaneAlt.visible=false
                         regvidPane.visible=true
+                        rclearCache.enabled=true
+                        rstart.enabled=true
+                        imgUpload.enabled=true
                         rdetectvideo.source="cache/detect.avi"
                         roriginalvideo.source="cache/original.avi"
                         rskelvideo.source="cache/skel.avi"
@@ -1313,282 +1329,453 @@ ApplicationWindow {
 
         Item {
             id: verifyPage
-            Rectangle {
-                id: skelblock
-                color: "gray"
-                implicitWidth: root.width / 90
-                implicitHeight: root.height / 7
-                anchors.left: parent.left
+
+            Pane {
+                id: verworkPane
                 anchors.top: parent.top
-                anchors.margins: 10
-
-                Label {
-                    id: skeltext
-                    color: "black"
-                    text: qsTr("G\nA\nI\nT")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
-                    anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            Rectangle {
-                id: skelside
-                color: "gray"
-                implicitWidth: 5
-                implicitHeight: skelvideo.height - skelblock.y - skelblock.height + 20
-                anchors.right: skelblock.right
-                anchors.top: skelblock.bottom
-            }
-
-            Rectangle {
-                id: skeltop
-                color: "gray"
-                implicitWidth: root.width / 2 + 5
-                implicitHeight: 5
-                anchors.top: parent.top
-                anchors.left: skelblock.right
-                anchors.topMargin: 10
-            }
-
-            Video {
-                id:skelvideo
-                implicitWidth: root.width / 2
-                implicitHeight: root.height / 3 - 10
-                anchors.left: skelblock.right
-                anchors.top: skelblock.top
-                anchors.margins: 5
-                anchors.leftMargin: 0
-                fillMode: 0
-                autoPlay: true
-                source: ""
-            }
-
-            Label {
-                id: skeldef
-                anchors.fill: skelvideo
-                color: "black"
-                text: qsTr("No preview Available")
-                font.family: customFont.name
-                font.pointSize: 16
-                fontSizeMode: Text.Fit
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Rectangle {
-                id: detectblock
-                color: "gray"
-                implicitWidth: root.width / 90
-                implicitHeight: root.height / 7
                 anchors.left: parent.left
-                anchors.top: skelvideo.bottom
                 anchors.margins: 10
-
-                Label {
-                    id: detecttext
-                    color: "black"
-                    text: qsTr("D\nE\nT\nE\nC\nT")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
+                implicitHeight: parent.height - 20
+                implicitWidth: parent.width / 3
+                contentItem: Rectangle {
                     anchors.fill: parent
-        //            font.pointSize: 15
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Video {
-                id: detectvideo
-        //        visible: false
-                implicitWidth: root.width / 2
-                implicitHeight: root.height / 3 - 10
-                anchors.left: detectblock.right
-                anchors.top: detectblock.top
-                anchors.margins: 5
-                anchors.leftMargin: 0
-                fillMode: 0
-                autoPlay: true
-                source: ""
-            }
-
-
-            Label {
-                id: detectdef
-                anchors.fill: detectvideo
-                color: "black"
-                text: qsTr("No preview Available")
-                font.family: customFont.name
-                font.pointSize: 16
-                fontSizeMode: Text.Fit
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Rectangle {
-                id: detectside
-                color: "gray"
-                implicitWidth: 5
-                implicitHeight: detectvideo.height - detectblock.height + 10
-                anchors.right: detectblock.right
-                anchors.top: detectblock.bottom
-            }
-
-            Rectangle {
-                id: detecttop
-                color: "gray"
-                implicitWidth: root.width / 2 + 5
-                implicitHeight: 5
-                anchors.top: detectblock.top
-                anchors.left: detectblock.right
-            }
-
-            Rectangle {
-                id: originalblock
-                color: "gray"
-                implicitWidth: root.width / 90
-                implicitHeight: (root.height - detectvideo.y - detectvideo.height - 20)/2
-                anchors.left: parent.left
-                anchors.top: detectvideo.bottom
-                anchors.margins: 10
-
-                Label {
-                    id: originaltext
-                    color: "black"
-                    text: qsTr("O\nR\nI\nG\nI\nN\nA\nL")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
-                    anchors.fill: parent
-        //            font.pointSize: 15
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Video {
-                id:originalvideo
-                implicitWidth: root.width / 3
-                implicitHeight: root.height - detectvideo.y - detectvideo.height - 30
-                anchors.left: originalblock.right
-                anchors.top: originalblock.top
-                anchors.margins: 5
-                anchors.leftMargin: 0
-                fillMode: 0
-                autoPlay: true
-                source: ""
-            }
-
-
-            Label {
-                id: originaldef
-                anchors.fill: originalvideo
-                color: "black"
-                text: qsTr("No preview Available")
-                font.family: customFont.name
-                font.pointSize: 16
-                fontSizeMode: Text.Fit
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Rectangle {
-                id: originalside
-                color: "gray"
-                implicitWidth: 5
-                implicitHeight: originalvideo.height - originalblock.height + 10
-                anchors.right: originalblock.right
-                anchors.top: originalblock.bottom
-            }
-
-            Rectangle {
-                id: originaltop
-                color: "gray"
-                implicitWidth: originalvideo.width + 5
-                implicitHeight: 5
-                anchors.top: originalblock.top
-                anchors.left: originalblock.right
-            }
-
-            Button {
-                id: start
-                implicitWidth: root.width / 10
-                implicitHeight: root.height / 20
-                anchors.right: detailsblock.left
-                anchors.top: originalvideo.top
-                anchors.rightMargin: 30
-                contentItem: Text {
-                    text: qsTr("Verify")
-                    fontSizeMode: Text.Fit
-                    id: starttext
-                    font.family: customFont.name
-                    color: "white"
-                    font.pointSize: 16
-                    opacity: enabled ? 1.0 : 0.3
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
-                background: Rectangle {
-                    id: startRect
-                    implicitWidth: 223
-                    implicitHeight: 48
-                    color: "#3476d4"
-                    radius: 2
+                    color: bgcolor
                 }
 
-                ToolTip {
-                    id: startTip
-                    text : qsTr("Compare Gait features of the person with database.")
-                    delay: 1000
-                    timeout: 3000
-                    visible: start.hovered
-                    contentItem: Text {
-                        text: startTip.text
+                Rectangle {
+                    id: mugshotblock
+                    implicitWidth: root.width / 90
+                    implicitHeight: mugshotframe.height / 2
+                    color: "gray"
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.topMargin: 50
+                    anchors.leftMargin: parent.width / 2 - mugshotframe.width / 2 - root.width / 90
+
+                    Label {
+                        id: mugshottext
+                        color: "black"
+                        text: qsTr("P\nH\nO\nT\nO")
                         font.family: customFont.name
-                        color: "silver"
+                        fontSizeMode: Text.VerticalFit
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
-                    background: Rectangle {
-                        color: "black"
-                        opacity: 0.7
-                        radius: 5
+
+                }
+                    Frame {
+                        id: mugshotframe
+                        implicitWidth: parent.width / 2 - 40
+                        implicitHeight: implicitWidth
+                        anchors.top: mugshotblock.top
+                        anchors.left: mugshotblock.right
+                        anchors.topMargin: 5
+                        Image {
+                            id: mugshot
+                            anchors.fill: parent
+                            source: ""
+                        }
                     }
-                }
 
-                onClicked: {
-                    progressBar.visible = true
-                    detectvideo.source = ""
-                    originalvideo.source = ""
-                    skelvideo.source = ""
-                    progressBar.value = 0.0
-                    start.enabled = false
-                    clearCache.enabled = false
-                    videoanalyze.process(false, 0)
-                }
+                    Rectangle {
+                        id: mugshotside
+                        color: "gray"
+                        implicitWidth: 5
+                        implicitHeight: mugshotframe.height - mugshotblock.height + 10
+                        anchors.right: mugshotblock.right
+                        anchors.top: mugshotblock.bottom
+                    }
 
-                Glow {
-                        anchors.fill: starttext
-                        id: startglow
-                        radius: 8
-                        samples: 17
-                        color: "black"
-                        source: starttext
+                    Rectangle {
+                        id: mugshottop
+                        color: "gray"
+                        implicitWidth: mugshotframe.width + 5
+                        implicitHeight: 5
+                        anchors.top: mugshotblock.top
+                        anchors.left: mugshotblock.right
+                    }
+
+                    Label {
+                        id: unauth
+                        width: parent.width - 20
+                        height: mugshotblock.height
                         visible: false
+                        anchors.left: parent.left
+                        anchors.bottom: parent.bottom
+                        anchors.rightMargin: 10
+                        anchors.bottomMargin: 10
+                        color: "#ff1a00"
+                        text: qsTr("UNAUTHORIZED!")
+                        font.family: customFont.name
+                        font.pixelSize: 32
+                        fontSizeMode: Text.Fit
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
 
-                onHoveredChanged: hovered ? startRect.color="#4286f4" : startRect.color="#3476d4"
+                    Label {
+                        id: veruserid
+                        anchors.top: mugshotside.bottom
+                        anchors.left: parent.left
+                        anchors.topMargin: 20
+                        anchors.leftMargin: 10
+                        text: qsTr("UserID: ")
+                        font.family: customFont.name
+                        font.pointSize: 16
+                        color: "silver"
+                        fontSizeMode: Text.Fit
+                    }
+
+                    Rectangle {
+                        id: vermatchuserid
+                        anchors.top: veruserid.top
+                        anchors.left: veruserid.right
+                        anchors.leftMargin: 10
+                        implicitHeight: veruserid.height
+                        implicitWidth: parent.width - veruserid.width - 30
+                        color: bgcolor
+                        Label {
+                            id: vermatchuseridText
+                            anchors.fill: parent
+                            font.family: customFont.name
+                            font.pointSize: 16
+                            color: "silver"
+                            fontSizeMode: Text.Fit
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+
+                    Label {
+                        id: verusername
+                        anchors.top: veruserid.bottom
+                        anchors.left: veruserid.left
+                        anchors.topMargin: 20
+                        text: qsTr("Name: ")
+                        font.family: customFont.name
+                        font.pointSize: 16
+                        color: "silver"
+                        fontSizeMode: Text.Fit
+                    }
+
+                    Rectangle {
+                        id: vermatchusername
+                        anchors.top: verusername.top
+                        anchors.left: verusername.right
+                        anchors.leftMargin: 10
+                        implicitHeight: verusername.height
+                        implicitWidth: parent.width - verusername.width - 30
+                        color: bgcolor
+                        Label {
+                            id: vermatchusernameText
+                            anchors.fill: parent
+                            font.family: customFont.name
+                            font.pointSize: 16
+                            color: "silver"
+                            fontSizeMode: Text.Fit
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+
+                    Label {
+                        id: veruserpos
+                        anchors.top: verusername.bottom
+                        anchors.left: veruserid.left
+                        anchors.topMargin: 20
+                        text: qsTr("Position: ")
+                        font.family: customFont.name
+                        font.pointSize: 16
+                        color: "silver"
+                        fontSizeMode: Text.Fit
+                    }
+
+                    Rectangle {
+                        id: vermatchuserpos
+                        anchors.top: veruserpos.top
+                        anchors.left: veruserpos.right
+                        anchors.leftMargin: 10
+                        implicitHeight: veruserpos.height
+                        implicitWidth: parent.width - veruserpos.width - 30
+                        color: bgcolor
+                        Label {
+                            id: vermatchuserposText
+                            font.family: customFont.name
+                            anchors.fill: parent
+                            font.pointSize: 16
+                            color: "silver"
+                            fontSizeMode: Text.Fit
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+
+                    Label {
+                        id: veruserclr
+                        anchors.top: veruserpos.bottom
+                        anchors.left: veruserid.left
+                        anchors.topMargin: 20
+                        text: qsTr("Clearance Level: ")
+                        font.family: customFont.name
+                        font.pointSize: 16
+                        color: "silver"
+                        fontSizeMode: Text.Fit
+                    }
+
+                    Rectangle {
+                        id: vermatchuserclr
+                        anchors.top: veruserclr.top
+                        anchors.left: veruserclr.right
+                        anchors.leftMargin: 10
+                        implicitHeight: veruserclr.height
+                        implicitWidth: parent.width - veruserclr.width - 30
+                        color: bgcolor
+                        Label {
+                            id: vermatchuserclrText
+                            font.family: customFont.name
+                            anchors.fill: parent
+                            font.pointSize: 16
+                            color: "silver"
+                            fontSizeMode: Text.Fit
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                   }
             }
+
+            Pane {
+                id: vervidPane
+                visible: false
+                anchors.top: parent.top
+                anchors.left: verworkPane.right
+                anchors.margins: 10
+                implicitHeight: parent.height - 20
+                implicitWidth: 2 * parent.width / 3 - 30
+                contentItem: Rectangle {
+                    anchors.fill: parent
+                    color: bgcolor
+                }
+
+                Rectangle {
+                    id: skelblock
+                    color: "gray"
+                    implicitWidth: root.width / 90
+                    implicitHeight: root.height / 7
+                    anchors.left: parent.left
+                    anchors.top: originalside.bottom
+                    anchors.margins: 10
+
+                    Label {
+                        id: skeltext
+                        color: "silver"
+                        text: qsTr("G\nA\nI\nT")
+                        font.family: customFont.name
+                        fontSizeMode: Text.VerticalFit
+                        font.pointSize: 10
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Rectangle {
+                    id: skelside
+                    color: "gray"
+                    implicitWidth: 5
+                    implicitHeight: skelvideo.height - skelblock.height + 20
+                    anchors.right: skelblock.right
+                    anchors.top: skelblock.bottom
+                }
+
+                Rectangle {
+                    id: skeltop
+                    color: "gray"
+                    implicitWidth: parent.width / 2 - 35
+                    implicitHeight: 5
+                    anchors.top: skelblock.top
+                    anchors.left: skelblock.right
+                }
+
+                Video {
+                    id:skelvideo
+                    implicitWidth: parent.width / 2 - 40
+                    implicitHeight: parent.height / 2 - 20
+                    anchors.left: skelblock.right
+                    anchors.top: skelblock.top
+                    anchors.margins: 5
+                    anchors.leftMargin: 0
+                    fillMode: 0
+                    autoPlay: true
+                    source: ""
+                }
+
+                Rectangle {
+                    id: detectblock
+                    color: "gray"
+                    implicitWidth: root.width / 90
+                    implicitHeight: root.height / 7
+                    anchors.left: skelvideo.right
+                    anchors.top: skeltop.top
+                    anchors.leftMargin: 10
+
+                    Label {
+                        id: detecttext
+                        color: "silver"
+                        text: qsTr("D\nE\nT\nE\nC\nT")
+                        font.family: customFont.name
+                        fontSizeMode: Text.VerticalFit
+                        font.pointSize: 10
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Video {
+                    id: detectvideo
+                    implicitWidth: parent.width / 2 - 40
+                    implicitHeight: parent.height / 2 - 20
+                    anchors.left: detectblock.right
+                    anchors.top: detectblock.top
+                    anchors.margins: 5
+                    anchors.leftMargin: 0
+                    fillMode: 0
+                    autoPlay: true
+                    source: ""
+                }
+
+                Rectangle {
+                    id: detectside
+                    color: "gray"
+                    implicitWidth: 5
+                    implicitHeight: detectvideo.height - detectblock.height + 20
+                    anchors.right: detectblock.right
+                    anchors.top: detectblock.bottom
+                }
+
+                Rectangle {
+                    id: detecttop
+                    color: "gray"
+                    implicitWidth: parent.width / 2 - 35
+                    implicitHeight: 5
+                    anchors.top: detectblock.top
+                    anchors.left: detectblock.right
+                }
+
+                Rectangle {
+                    id: originalblock
+                    color: "gray"
+                    implicitWidth: root.width / 90
+                    implicitHeight: originalvideo.height / 2
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.topMargin: 10
+                    anchors.rightMargin: originalvideo.width + 20
+
+                    Label {
+                        id: originaltext
+                        color: "silver"
+                        text: qsTr("O\nR\nI\nG\nI\nN\nA\nL")
+                        font.family: customFont.name
+                        fontSizeMode: Text.VerticalFit
+                        font.pointSize: 10
+                        anchors.fill: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Video {
+                    id:originalvideo
+                    implicitWidth: parent.width / 2 - 35
+                    implicitHeight: parent.height / 2 - 40
+                    anchors.left: originalblock.right
+                    anchors.top: originalblock.top
+                    anchors.margins: 5
+                    anchors.leftMargin: 0
+                    fillMode: 0
+                    autoPlay: true
+                    source: ""
+                    onStopped: {
+                        vervidPaneAlt.visible = true
+                        vervidPane.visible = false
+                        start.enabled = true
+                        clearCache.enabled = true
+                    }
+                }
+
+                Rectangle {
+                    id: originalside
+                    color: "gray"
+                    implicitWidth: 5
+                    implicitHeight: originalvideo.height - originalblock.height + 10
+                    anchors.right: originalblock.right
+                    anchors.top: originalblock.bottom
+                }
+
+                Rectangle {
+                    id: originaltop
+                    color: "gray"
+                    implicitWidth: originalvideo.width + 5
+                    implicitHeight: 5
+                    anchors.top: originalblock.top
+                    anchors.left: originalblock.right
+                }
+
+                Label {
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: 20
+                    anchors.rightMargin: parent.width / 2 + 40
+                    font.family: customFont.name
+                    textFormat: Text.RichText
+                    wrapMode: Text.WordWrap
+                    font.pointSize: 16
+                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
+<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    color: "gray"
+                }
+            }
+
+            Pane {
+                id: vervidPaneAlt
+                anchors.top: parent.top
+                anchors.left: verworkPane.right
+                anchors.margins: 10
+                implicitHeight: parent.height - 20
+                implicitWidth: 2 * parent.width / 3 - 30
+                contentItem: Rectangle {
+                    anchors.fill: parent
+                    color: bgcolor
+                }
+
+                Label {
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: 20
+                    anchors.rightMargin: parent.width / 2 + 40
+                    font.family: customFont.name
+                    textFormat: Text.RichText
+                    wrapMode: Text.WordWrap
+                    font.pointSize: 16
+                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
+<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    color: "gray"
+                }
 
                 Button {
-                    id: clearCache
-                    implicitWidth: start.width
-                    implicitHeight: start.height
-                    anchors.right: start.right
-                    anchors.top: progressBar.bottom
-                    anchors.topMargin: 40
+                    id: start
+                    implicitWidth: root.width / 7
+                    implicitHeight: root.height / 20
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.leftMargin: vervidPaneAlt.width / 2 - root.width / 14
+                    anchors.topMargin: vervidPaneAlt.height / 2 - root.height / 40
                     contentItem: Text {
-                        text: qsTr("Clear Cache")
+                        text: qsTr("Verify")
                         fontSizeMode: Text.Fit
-                        id: cachetext
+                        id: starttext
                         font.family: customFont.name
                         color: "white"
                         font.pointSize: 16
@@ -1598,7 +1785,7 @@ ApplicationWindow {
                         elide: Text.ElideRight
                     }
                     background: Rectangle {
-                        id: cacheRect
+                        id: startRect
                         implicitWidth: 223
                         implicitHeight: 48
                         color: "#3476d4"
@@ -1606,13 +1793,13 @@ ApplicationWindow {
                     }
 
                     ToolTip {
-                        id: cacheTip
-                        text : qsTr("Clear the 'cache' directory.")
+                        id: startTip
+                        text : qsTr("Compare Gait features of the person with database.")
                         delay: 1000
                         timeout: 3000
-                        visible: clearCache.hovered
+                        visible: start.hovered
                         contentItem: Text {
-                            text: cacheTip.text
+                            text: startTip.text
                             font.family: customFont.name
                             color: "silver"
                         }
@@ -1624,225 +1811,785 @@ ApplicationWindow {
                     }
 
                     onClicked: {
-                        clearCache.enabled = false
+                        vervidDialog.visible = true
                         start.enabled = false
-                        videoanalyze.clearprocess()
+                        clearCache.enabled = false
+                        unauth.visible = false
+                        mugshot.source = ""
+//                        mugshotdef.visible = true
                     }
 
                     Glow {
-                            anchors.fill: cachetext
-                            id: cacheglow
+                            anchors.fill: starttext
+                            id: startglow
                             radius: 8
                             samples: 17
-                            color: "black"
-                            source: cachetext
+                            color: "#b3e5fc"
+                            source: starttext
                             visible: false
                         }
 
+                    onHoveredChanged: hovered ? startRect.color="#4286f4" : startRect.color="#3476d4"
+                }
+
+
+
+                    Button {
+                        id: clearCache
+                        implicitWidth: start.width
+                        implicitHeight: start.height
+                        anchors.right: start.right
+                        anchors.top: progressBar.bottom
+                        anchors.topMargin: 40
+                        contentItem: Text {
+                            text: qsTr("Clear Cache")
+                            fontSizeMode: Text.Fit
+                            id: cachetext
+                            font.family: customFont.name
+                            color: "white"
+                            font.pointSize: 16
+                            opacity: enabled ? 1.0 : 0.3
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                        }
+                        background: Rectangle {
+                            id: cacheRect
+                            implicitWidth: 223
+                            implicitHeight: 48
+                            color: "#3476d4"
+                            radius: 2
+                        }
+
+                        ToolTip {
+                            id: cacheTip
+                            text : qsTr("Clear the 'cache' directory.")
+                            delay: 1000
+                            timeout: 3000
+                            visible: clearCache.hovered
+                            contentItem: Text {
+                                text: cacheTip.text
+                                font.family: customFont.name
+                                color: "silver"
+                            }
+                            background: Rectangle {
+                                color: "black"
+                                opacity: 0.7
+                                radius: 5
+                            }
+                        }
+
+                        onClicked: {
+                            clearCache.enabled = false
+                            start.enabled = false
+                            videoanalyze.clearprocess()
+                        }
+
+                        Glow {
+                                anchors.fill: cachetext
+                                id: cacheglow
+                                radius: 8
+                                samples: 17
+                                color: "#b3e5fc"
+                                source: cachetext
+                                visible: false
+                            }
+
                     onHoveredChanged: hovered ? cacheRect.color="#4286f4" : cacheRect.color="#3476d4"
 
-                }
+                    }
 
-                Label {
-                    id: cacheText
-                    visible: false
-                    width: clearCache.width / 2
-                    height: clearCache.height / 4
-                    color: "#ff1a00"
-                    anchors.left: start.left
-                    anchors.top: clearCache.bottom
-                    anchors.topMargin: 2
-                    font.family: customFont.name
-                    text: qsTr("CACHE CLEARED!")
-                    font.pointSize: 9
+                    Label {
+                        id: cacheText
+                        visible: false
+                        width: clearCache.width / 2
+                        height: clearCache.height / 4
+                        color: "#ff1a00"
+                        anchors.left: start.left
+                        anchors.top: clearCache.bottom
+                        anchors.topMargin: 2
+                        font.family: customFont.name
+                        text: qsTr("CACHE CLEARED!")
+                        font.pointSize: 9
 
-                }
+                    }
 
-                Timer {
-                    id: cacheTimer
-                    interval: 5000
-                    onTriggered: cacheText.visible=false
-                }
+                    Timer {
+                        id: cacheTimer
+                        interval: 5000
+                        onTriggered: (cacheText.visible=false) && (cacheText.text = "CACHE CLEARED!")
+                    }
 
-            Rectangle {
-                id: mugshotblock
-                implicitWidth: root.width / 90
-                implicitHeight: originalblock.height
-                color: "gray"
-                anchors.right: mugshotframe.left
-                anchors.top: skelblock.top
-                anchors.leftMargin: 50
+                    ProgressBar {
+                        id: progressBar
+                        value: 0.0
+                        padding: 2
+                        implicitWidth: start.width
+                        anchors.right: start.right
+                        anchors.top: start.bottom
+                        anchors.topMargin: 10
+                        background: Rectangle {
+                            implicitWidth: 223
+                            implicitHeight: 9
+                            color: "#00000000"
+                            radius: 3
+                        }
 
-                Label {
-                    id: mugshottext
-                    color: "black"
-                    text: qsTr("P\nH\nO\nT\nO")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
-                    anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
+                        contentItem: Item {
+                            implicitWidth: 200
+                            implicitHeight: 4
+
+                            Rectangle {
+                                width: progressBar.visualPosition * parent.width
+                                height: parent.height
+                                radius: 2
+                                color: "#01579b"
+                            }
+                        }
+                    }
 
             }
-                Frame {
-                    id: mugshotframe
-                    implicitHeight: originalvideo.height - 10
-                    implicitWidth: implicitHeight
-                    x: root.width - 10 - mugshotframe.width
-                    anchors.top: mugshotblock.top
-                    anchors.margins: 5
-                    anchors.leftMargin: 0
-                    Image {
-                        id: mugshot
+
+
+                Popup {
+                    id: verConfirm
+                    implicitHeight: root.height / 3
+                    implicitWidth:  root.width / 4
+                    x: 3 * root.width / 8
+                    y: root.height / 3 - mainHeader.height - 10
+                    modal: true
+                    focus: true
+                    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+                    background: Rectangle {
                         anchors.fill: parent
-                        source: ""
+                        color: "black"
+                        opacity: 0.7
+                        radius: 8
                     }
-                }
 
-
-                Label {
-                    id: mugshotdef
-                    anchors.fill: mugshotframe
-                    color: "black"
-                    text: qsTr("No preview Available")
-                    font.family: customFont.name
-                    font.pointSize: 16
-                    fontSizeMode: Text.Fit
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                Rectangle {
-                    id: mugshotside
-                    color: "gray"
-                    implicitWidth: 5
-                    implicitHeight: mugshotframe.height - mugshotblock.height + 10
-                    anchors.right: mugshotblock.right
-                    anchors.top: mugshotblock.bottom
-                }
-
-                Rectangle {
-                    id: mugshottop
-                    color: "gray"
-                    implicitWidth: mugshotframe.width + 5
-                    implicitHeight: 5
-                    anchors.top: mugshotblock.top
-                    anchors.left: mugshotblock.right
-                }
-
-                Label {
-                    id: unauth
-                    width: root.width / 4
-                    height: mugshotblock.height
-                    visible: false
-                    anchors.right: mugshotblock.left
-                    anchors.top: mugshotblock.top
-                    anchors.rightMargin: 10
-                    color: "#ff1a00"
-                    text: qsTr("UNAUTHORIZED!")
-                    font.family: customFont.name
-                    font.pixelSize: 32
-                    fontSizeMode: Text.Fit
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-            Rectangle {
-                id: detailsblock
-                implicitWidth: root.width / 90
-                implicitHeight: (originalblock.y - mugshotblock.y - 10) / 4
-                color: "gray"
-                anchors.right: detailsframe.left
-                anchors.top: mugshotframe.bottom
-                anchors.topMargin: 10
-
-                Label {
-                    id: detailstext
-                    color: "black"
-                    text: qsTr("D\nE\nT\nA\nI\nL\nS")
-                    font.family: customFont.name
-                    fontSizeMode: Text.VerticalFit
-                    anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-                Frame {
-                    id: detailsframe
-                    implicitWidth: root.width / 3
-                    implicitHeight: detailsblock.height * 2 - 10
-                    anchors.right: mugshotframe.right
-                    anchors.top: detailsblock.top
-                    anchors.margins: 5
-                    anchors.leftMargin: 0
-                    Image {
-                        id: details
+                    Label {
                         anchors.fill: parent
-                        source: ""
+                        anchors.bottomMargin: parent.height / 3
+                        wrapMode: Text.WordWrap
+                        font.family: customFont.name
+                        font.pointSize: 16
+                        color: "silver"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("Verify the person from Video :"+ vervidDialog.fileUrls+ " ?")
+                    }
+
+                    Button {
+                        id: vconfirm
+                        implicitHeight: parent.height / 4 - 20
+                        implicitWidth: parent.width / 2 - 20
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        contentItem: Text {
+                            text: qsTr("\uf00c Confirm")
+                            color: "white"
+                            font.family: iconFont.name, customFont.name
+                            font.pointSize: 16
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        background: Rectangle {
+                            id: vconfirmRect
+                            anchors.fill: parent
+                            color: "green"
+                            radius: 2
+                        }
+
+                        onClicked: {
+                            verConfirm.close()
+                            start.enabled=false
+                            clearCache.enabled=false
+                            videoanalyze.process(false, 0, vervidDialog.fileUrl)
+                        }
+
+                        onHoveredChanged: hovered ? vconfirmRect.color="forestgreen" : vconfirmRect.color="green"
+                    }
+
+                    Button {
+                        id: vcancel
+                        implicitHeight: parent.height / 4 - 20
+                        implicitWidth: parent.width / 2 - 20
+                        anchors.bottom: parent.bottom
+                        anchors.right: parent.right
+                        contentItem: Text {
+                            text: qsTr("\uf00d Cancel")
+                            color: "white"
+                            font.family: iconFont.name, customFont.name
+                            font.pointSize: 16
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        background: Rectangle {
+                            id: vcancelRect
+                            anchors.fill: parent
+                            color: "red"
+                            radius: 2
+                        }
+
+                        onClicked: {
+                            verConfirm.close()
+                        }
+
+                        onHoveredChanged: hovered ? vcancelRect.color="crimson" : vcancelRect.color="red"
+                    }
+
+                    FileDialog {
+                        id: vervidDialog
+                        title: "Please choose a video file"
+                        folder: shortcuts.home
+                        nameFilters: ["Video Files (*.mp4)"]
+                        onAccepted: {
+                            console.log("You chose: " + vervidDialog.fileUrls)
+                            clearCache.enabled = true
+                            start.enabled = true
+                            vervidDialog.visible = false
+                            verConfirm.open()
+                        }
+                        onRejected: {
+                            console.log("Canceled")
+                            clearCache.enabled = true
+                            start.enabled = true
+                            vervidDialog.visible = false
+                        }
+                        Component.onCompleted: visible = false
                     }
                 }
 
+//            Rectangle {
+//                id: skelblock
+//                color: "gray"
+//                implicitWidth: root.width / 90
+//                implicitHeight: root.height / 7
+//                anchors.left: parent.left
+//                anchors.top: parent.top
+//                anchors.margins: 10
 
-                Label {
-                    id: detailsdef
-                    anchors.fill: detailsframe
-                    color: "black"
-                    text: qsTr("No preview Available")
-                    font.family: customFont.name
-                    font.pointSize: 16
-                    fontSizeMode: Text.Fit
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
+//                Label {
+//                    id: skeltext
+//                    color: "black"
+//                    text: qsTr("G\nA\nI\nT")
+//                    font.family: customFont.name
+//                    fontSizeMode: Text.VerticalFit
+//                    anchors.fill: parent
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+//            }
 
-                Rectangle {
-                    id: detailsside
-                    color: "gray"
-                    implicitWidth: 5
-                    implicitHeight: detailsframe.height - detailsblock.height + 10
-                    anchors.right: detailsblock.right
-                    anchors.top: detailsblock.bottom
-                }
+//            Rectangle {
+//                id: skelside
+//                color: "gray"
+//                implicitWidth: 5
+//                implicitHeight: skelvideo.height - skelblock.y - skelblock.height + 20
+//                anchors.right: skelblock.right
+//                anchors.top: skelblock.bottom
+//            }
 
-                Rectangle {
-                    id: detailstop
-                    color: "gray"
-                    implicitWidth: detailsframe.width + 5
-                    implicitHeight: 5
-                    anchors.top: detailsblock.top
-                    anchors.left: detailsblock.right
-                }
+//            Rectangle {
+//                id: skeltop
+//                color: "gray"
+//                implicitWidth: root.width / 2 + 5
+//                implicitHeight: 5
+//                anchors.top: parent.top
+//                anchors.left: skelblock.right
+//                anchors.topMargin: 10
+//            }
 
-            ProgressBar {
-                id: progressBar
-                value: 0.0
-                padding: 2
-                implicitWidth: start.width
-                anchors.right: start.right
-                anchors.top: start.bottom
-                anchors.topMargin: 10
-                visible: false
-                background: Rectangle {
-                    implicitWidth: 223
-                    implicitHeight: 9
-                    color: "#00000000"
-                    radius: 3
-                }
+//            Video {
+//                id:skelvideo
+//                implicitWidth: root.width / 2
+//                implicitHeight: root.height / 3 - 10
+//                anchors.left: skelblock.right
+//                anchors.top: skelblock.top
+//                anchors.margins: 5
+//                anchors.leftMargin: 0
+//                fillMode: 0
+//                autoPlay: true
+//                source: ""
+//            }
 
-                contentItem: Item {
-                    implicitWidth: 200
-                    implicitHeight: 4
+//            Label {
+//                id: skeldef
+//                anchors.fill: skelvideo
+//                color: "black"
+//                text: qsTr("No preview Available")
+//                font.family: customFont.name
+//                font.pointSize: 16
+//                fontSizeMode: Text.Fit
+//                horizontalAlignment: Text.AlignHCenter
+//                verticalAlignment: Text.AlignVCenter
+//            }
 
-                    Rectangle {
-                        width: progressBar.visualPosition * parent.width
-                        height: parent.height
-                        radius: 2
-                        color: "gray"
-                    }
-                }
-            }
+//            Rectangle {
+//                id: detectblock
+//                color: "gray"
+//                implicitWidth: root.width / 90
+//                implicitHeight: root.height / 7
+//                anchors.left: parent.left
+//                anchors.top: skelvideo.bottom
+//                anchors.margins: 10
+
+//                Label {
+//                    id: detecttext
+//                    color: "black"
+//                    text: qsTr("D\nE\nT\nE\nC\nT")
+//                    font.family: customFont.name
+//                    fontSizeMode: Text.VerticalFit
+//                    anchors.fill: parent
+//        //            font.pointSize: 15
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+//            }
+//            Video {
+//                id: detectvideo
+//        //        visible: false
+//                implicitWidth: root.width / 2
+//                implicitHeight: root.height / 3 - 10
+//                anchors.left: detectblock.right
+//                anchors.top: detectblock.top
+//                anchors.margins: 5
+//                anchors.leftMargin: 0
+//                fillMode: 0
+//                autoPlay: true
+//                source: ""
+//            }
+
+
+//            Label {
+//                id: detectdef
+//                anchors.fill: detectvideo
+//                color: "black"
+//                text: qsTr("No preview Available")
+//                font.family: customFont.name
+//                font.pointSize: 16
+//                fontSizeMode: Text.Fit
+//                horizontalAlignment: Text.AlignHCenter
+//                verticalAlignment: Text.AlignVCenter
+//            }
+
+//            Rectangle {
+//                id: detectside
+//                color: "gray"
+//                implicitWidth: 5
+//                implicitHeight: detectvideo.height - detectblock.height + 10
+//                anchors.right: detectblock.right
+//                anchors.top: detectblock.bottom
+//            }
+
+//            Rectangle {
+//                id: detecttop
+//                color: "gray"
+//                implicitWidth: root.width / 2 + 5
+//                implicitHeight: 5
+//                anchors.top: detectblock.top
+//                anchors.left: detectblock.right
+//            }
+
+//            Rectangle {
+//                id: originalblock
+//                color: "gray"
+//                implicitWidth: root.width / 90
+//                implicitHeight: (root.height - detectvideo.y - detectvideo.height - 20)/2
+//                anchors.left: parent.left
+//                anchors.top: detectvideo.bottom
+//                anchors.margins: 10
+
+//                Label {
+//                    id: originaltext
+//                    color: "black"
+//                    text: qsTr("O\nR\nI\nG\nI\nN\nA\nL")
+//                    font.family: customFont.name
+//                    fontSizeMode: Text.VerticalFit
+//                    anchors.fill: parent
+//        //            font.pointSize: 15
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+//            }
+//            Video {
+//                id:originalvideo
+//                implicitWidth: root.width / 3
+//                implicitHeight: root.height - detectvideo.y - detectvideo.height - 30
+//                anchors.left: originalblock.right
+//                anchors.top: originalblock.top
+//                anchors.margins: 5
+//                anchors.leftMargin: 0
+//                fillMode: 0
+//                autoPlay: true
+//                source: ""
+//            }
+
+
+//            Label {
+//                id: originaldef
+//                anchors.fill: originalvideo
+//                color: "black"
+//                text: qsTr("No preview Available")
+//                font.family: customFont.name
+//                font.pointSize: 16
+//                fontSizeMode: Text.Fit
+//                horizontalAlignment: Text.AlignHCenter
+//                verticalAlignment: Text.AlignVCenter
+//            }
+
+//            Rectangle {
+//                id: originalside
+//                color: "gray"
+//                implicitWidth: 5
+//                implicitHeight: originalvideo.height - originalblock.height + 10
+//                anchors.right: originalblock.right
+//                anchors.top: originalblock.bottom
+//            }
+
+//            Rectangle {
+//                id: originaltop
+//                color: "gray"
+//                implicitWidth: originalvideo.width + 5
+//                implicitHeight: 5
+//                anchors.top: originalblock.top
+//                anchors.left: originalblock.right
+//            }
+
+//            Button {
+//                id: start
+//                implicitWidth: root.width / 10
+//                implicitHeight: root.height / 20
+//                anchors.right: detailsblock.left
+//                anchors.top: originalvideo.top
+//                anchors.rightMargin: 30
+//                contentItem: Text {
+//                    text: qsTr("Verify")
+//                    fontSizeMode: Text.Fit
+//                    id: starttext
+//                    font.family: customFont.name
+//                    color: "white"
+//                    font.pointSize: 16
+//                    opacity: enabled ? 1.0 : 0.3
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                    elide: Text.ElideRight
+//                }
+//                background: Rectangle {
+//                    id: startRect
+//                    implicitWidth: 223
+//                    implicitHeight: 48
+//                    color: "#3476d4"
+//                    radius: 2
+//                }
+
+//                ToolTip {
+//                    id: startTip
+//                    text : qsTr("Compare Gait features of the person with database.")
+//                    delay: 1000
+//                    timeout: 3000
+//                    visible: start.hovered
+//                    contentItem: Text {
+//                        text: startTip.text
+//                        font.family: customFont.name
+//                        color: "silver"
+//                    }
+//                    background: Rectangle {
+//                        color: "black"
+//                        opacity: 0.7
+//                        radius: 5
+//                    }
+//                }
+
+//                onClicked: {
+//                    progressBar.visible = true
+//                    detectvideo.source = ""
+//                    originalvideo.source = ""
+//                    skelvideo.source = ""
+//                    progressBar.value = 0.0
+//                    start.enabled = false
+//                    clearCache.enabled = false
+//                    videoanalyze.process(false, 0)
+//                }
+
+//                Glow {
+//                        anchors.fill: starttext
+//                        id: startglow
+//                        radius: 8
+//                        samples: 17
+//                        color: "black"
+//                        source: starttext
+//                        visible: false
+//                    }
+
+//                onHoveredChanged: hovered ? startRect.color="#4286f4" : startRect.color="#3476d4"
+//            }
+
+//                Button {
+//                    id: clearCache
+//                    implicitWidth: start.width
+//                    implicitHeight: start.height
+//                    anchors.right: start.right
+//                    anchors.top: progressBar.bottom
+//                    anchors.topMargin: 40
+//                    contentItem: Text {
+//                        text: qsTr("Clear Cache")
+//                        fontSizeMode: Text.Fit
+//                        id: cachetext
+//                        font.family: customFont.name
+//                        color: "white"
+//                        font.pointSize: 16
+//                        opacity: enabled ? 1.0 : 0.3
+//                        horizontalAlignment: Text.AlignHCenter
+//                        verticalAlignment: Text.AlignVCenter
+//                        elide: Text.ElideRight
+//                    }
+//                    background: Rectangle {
+//                        id: cacheRect
+//                        implicitWidth: 223
+//                        implicitHeight: 48
+//                        color: "#3476d4"
+//                        radius: 2
+//                    }
+
+//                    ToolTip {
+//                        id: cacheTip
+//                        text : qsTr("Clear the 'cache' directory.")
+//                        delay: 1000
+//                        timeout: 3000
+//                        visible: clearCache.hovered
+//                        contentItem: Text {
+//                            text: cacheTip.text
+//                            font.family: customFont.name
+//                            color: "silver"
+//                        }
+//                        background: Rectangle {
+//                            color: "black"
+//                            opacity: 0.7
+//                            radius: 5
+//                        }
+//                    }
+
+//                    onClicked: {
+//                        clearCache.enabled = false
+//                        start.enabled = false
+//                        videoanalyze.clearprocess()
+//                    }
+
+//                    Glow {
+//                            anchors.fill: cachetext
+//                            id: cacheglow
+//                            radius: 8
+//                            samples: 17
+//                            color: "black"
+//                            source: cachetext
+//                            visible: false
+//                        }
+
+//                    onHoveredChanged: hovered ? cacheRect.color="#4286f4" : cacheRect.color="#3476d4"
+
+//                }
+
+//                Label {
+//                    id: cacheText
+//                    visible: false
+//                    width: clearCache.width / 2
+//                    height: clearCache.height / 4
+//                    color: "#ff1a00"
+//                    anchors.left: start.left
+//                    anchors.top: clearCache.bottom
+//                    anchors.topMargin: 2
+//                    font.family: customFont.name
+//                    text: qsTr("CACHE CLEARED!")
+//                    font.pointSize: 9
+
+//                }
+
+//                Timer {
+//                    id: cacheTimer
+//                    interval: 5000
+//                    onTriggered: cacheText.visible=false
+//                }
+
+//            Rectangle {
+//                id: mugshotblock
+//                implicitWidth: root.width / 90
+//                implicitHeight: originalblock.height
+//                color: "gray"
+//                anchors.right: mugshotframe.left
+//                anchors.top: skelblock.top
+//                anchors.leftMargin: 50
+
+//                Label {
+//                    id: mugshottext
+//                    color: "black"
+//                    text: qsTr("P\nH\nO\nT\nO")
+//                    font.family: customFont.name
+//                    fontSizeMode: Text.VerticalFit
+//                    anchors.fill: parent
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+
+//            }
+//                Frame {
+//                    id: mugshotframe
+//                    implicitHeight: originalvideo.height - 10
+//                    implicitWidth: implicitHeight
+//                    x: root.width - 10 - mugshotframe.width
+//                    anchors.top: mugshotblock.top
+//                    anchors.margins: 5
+//                    anchors.leftMargin: 0
+//                    Image {
+//                        id: mugshot
+//                        anchors.fill: parent
+//                        source: ""
+//                    }
+//                }
+
+
+//                Label {
+//                    id: mugshotdef
+//                    anchors.fill: mugshotframe
+//                    color: "black"
+//                    text: qsTr("No preview Available")
+//                    font.family: customFont.name
+//                    font.pointSize: 16
+//                    fontSizeMode: Text.Fit
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+
+//                Rectangle {
+//                    id: mugshotside
+//                    color: "gray"
+//                    implicitWidth: 5
+//                    implicitHeight: mugshotframe.height - mugshotblock.height + 10
+//                    anchors.right: mugshotblock.right
+//                    anchors.top: mugshotblock.bottom
+//                }
+
+//                Rectangle {
+//                    id: mugshottop
+//                    color: "gray"
+//                    implicitWidth: mugshotframe.width + 5
+//                    implicitHeight: 5
+//                    anchors.top: mugshotblock.top
+//                    anchors.left: mugshotblock.right
+//                }
+
+//                Label {
+//                    id: unauth
+//                    width: root.width / 4
+//                    height: mugshotblock.height
+//                    visible: false
+//                    anchors.right: mugshotblock.left
+//                    anchors.top: mugshotblock.top
+//                    anchors.rightMargin: 10
+//                    color: "#ff1a00"
+//                    text: qsTr("UNAUTHORIZED!")
+//                    font.family: customFont.name
+//                    font.pixelSize: 32
+//                    fontSizeMode: Text.Fit
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+
+//            Rectangle {
+//                id: detailsblock
+//                implicitWidth: root.width / 90
+//                implicitHeight: (originalblock.y - mugshotblock.y - 10) / 4
+//                color: "gray"
+//                anchors.right: detailsframe.left
+//                anchors.top: mugshotframe.bottom
+//                anchors.topMargin: 10
+
+//                Label {
+//                    id: detailstext
+//                    color: "black"
+//                    text: qsTr("D\nE\nT\nA\nI\nL\nS")
+//                    font.family: customFont.name
+//                    fontSizeMode: Text.VerticalFit
+//                    anchors.fill: parent
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+//            }
+
+//                Frame {
+//                    id: detailsframe
+//                    implicitWidth: root.width / 3
+//                    implicitHeight: detailsblock.height * 2 - 10
+//                    anchors.right: mugshotframe.right
+//                    anchors.top: detailsblock.top
+//                    anchors.margins: 5
+//                    anchors.leftMargin: 0
+//                    Image {
+//                        id: details
+//                        anchors.fill: parent
+//                        source: ""
+//                    }
+//                }
+
+
+//                Label {
+//                    id: detailsdef
+//                    anchors.fill: detailsframe
+//                    color: "black"
+//                    text: qsTr("No preview Available")
+//                    font.family: customFont.name
+//                    font.pointSize: 16
+//                    fontSizeMode: Text.Fit
+//                    horizontalAlignment: Text.AlignHCenter
+//                    verticalAlignment: Text.AlignVCenter
+//                }
+
+//                Rectangle {
+//                    id: detailsside
+//                    color: "gray"
+//                    implicitWidth: 5
+//                    implicitHeight: detailsframe.height - detailsblock.height + 10
+//                    anchors.right: detailsblock.right
+//                    anchors.top: detailsblock.bottom
+//                }
+
+//                Rectangle {
+//                    id: detailstop
+//                    color: "gray"
+//                    implicitWidth: detailsframe.width + 5
+//                    implicitHeight: 5
+//                    anchors.top: detailsblock.top
+//                    anchors.left: detailsblock.right
+//                }
+
+//            ProgressBar {
+//                id: progressBar
+//                value: 0.0
+//                padding: 2
+//                implicitWidth: start.width
+//                anchors.right: start.right
+//                anchors.top: start.bottom
+//                anchors.topMargin: 10
+//                visible: false
+//                background: Rectangle {
+//                    implicitWidth: 223
+//                    implicitHeight: 9
+//                    color: "#00000000"
+//                    radius: 3
+//                }
+
+//                contentItem: Item {
+//                    implicitWidth: 200
+//                    implicitHeight: 4
+
+//                    Rectangle {
+//                        width: progressBar.visualPosition * parent.width
+//                        height: parent.height
+//                        radius: 2
+//                        color: "gray"
+//                    }
+//                }
+//            }
 
             Connections {
                 target: videoanalyze
@@ -1855,6 +2602,8 @@ ApplicationWindow {
                     progressBar.visible=false
                     start.enabled = true
                     clearCache.enabled = true
+                    vervidPane.visible = true
+                    vervidPaneAlt.visible = false
                     detectvideo.source="cache/detect.avi"
                     originalvideo.source="cache/original.avi"
                     skelvideo.source="cache/skel.avi"
@@ -1869,17 +2618,23 @@ ApplicationWindow {
                     cacheText.visible = true
                     unauth.visible = false
                     mugshot.source = ""
-                    mugshotdef.visible = true
-                    detailsdef.text = "No Preview Available"
+                    vermatchuseridText.text = ""
+                    vermatchusernameText.text = ""
+                    vermatchuserposText.text = ""
+                    vermatchuserclrText.text = ""
                     cacheTimer.start()
                 }
 
                 onVerifyCompleted: {
                     unauth.visible = false
                     mugshot.source="cache/image.png"
-                    mugshotdef.visible = false
-                    detailsdef.text= "UserID: \t" + id + "\n\nName: \t" + name + "\n\nPosition: \t" + pos + "\n\nClearance Level: \t" + clr
-                    detailsdef.font.pointSize= 24
+//                    mugshotdef.visible = false
+//                    detailsdef.text= "UserID: \t" + id + "\n\nName: \t" + name + "\n\nPosition: \t" + pos + "\n\nClearance Level: \t" + clr
+//                    detailsdef.font.pointSize= 24
+                    vermatchuseridText.text = id
+                    vermatchusernameText.text = name
+                    vermatchuserposText.text = pos
+                    vermatchuserclrText.text = clr
                     unauth.visible = true
                     unauth.text = qsTr("AUTHORIZED")
                     unauth.color = "#00ff00"
@@ -1888,8 +2643,12 @@ ApplicationWindow {
                 onUnauthCheck: {
                     unauth.visible = true
                     mugshot.source = ""
-                    mugshotdef.visible = true
-                    detailsdef.text = "No Preview Available"
+//                    mugshotdef.visible = true
+//                    detailsdef.text = "No Preview Available"
+                    vermatchuseridText.text = ""
+                    vermatchusernameText.text = ""
+                    vermatchuserposText.text = ""
+                    vermatchuserclrText.text = ""
                     unauth.text = qsTr("UNAUTHORIZED")
                     unauth.color = "#ff1a00"
                 }
