@@ -25,12 +25,15 @@ wheels/
 .installed.cfg
 *.egg
 images/
-sources/
 sample/
 cache/
 *.pro
 *.pro.user
 *.qmlc
+*.mp4
+*.png
+*.avi
+*.csv
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
