@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.3
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.3
 import QtMultimedia 5.0
@@ -1728,8 +1728,8 @@ ApplicationWindow {
                     textFormat: Text.RichText
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
-<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Click on the 'Verify' button to get started.</li>\
+<li>Select the video to be processed and compared with the data in the database.</li><li>If a match is found, the details will be showed on the left pane.</li></ul>")
                     color: "gray"
                 }
             }
@@ -1756,8 +1756,8 @@ ApplicationWindow {
                     textFormat: Text.RichText
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
-<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Click on the 'Verify' button to get started.</li>\
+<li>Select the video to be processed and compared with the data in the database.</li><li>If a match is found, the details will be showed on the left pane.</li></ul>")
                     color: "gray"
                 }
 
@@ -2129,15 +2129,21 @@ ApplicationWindow {
                     color: bgcolor
                 }
 
-                Label {
-                    id: guide
+                Flickable {
+                    id: flickable
                     anchors.fill: parent
-                    font.family: customFont.name
-                    font.pointSize: 16
-                    fontSizeMode: Text.Fit
-                    textFormat: Text.RichText
-                    wrapMode: Text.WordWrap
-                    color: "gray"
+                    TextArea.flickable: TextArea {
+                        id: guide
+                        font.family: customFont.name
+                        font.pointSize: 16
+                        textFormat: Text.RichText
+                        wrapMode: Text.WordWrap
+                        color: "gray"
+                        readOnly: true
+                    }
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AlwaysOn
+                    }
                 }
             }
 
