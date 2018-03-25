@@ -882,7 +882,7 @@ ApplicationWindow {
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
                     text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
-<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9]</ul>")
                     color: "gray"
                 }
             }
@@ -910,7 +910,7 @@ ApplicationWindow {
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
                     text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
-<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9</ul>")
+<li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9]</ul>")
                     color: "gray"
                 }
 
@@ -2105,7 +2105,7 @@ ApplicationWindow {
 
                 onUnauthCheck: {
                     unauth.visible = true
-                    mugshot.source = ""
+                    mugshot.source = "sources/default.png"
                     vermatchuseridText.text = ""
                     vermatchusernameText.text = ""
                     vermatchuserposText.text = ""

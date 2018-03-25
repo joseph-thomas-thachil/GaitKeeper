@@ -383,8 +383,7 @@ class busyThread(QObject) :
                 print(master_centers)
                 print(cluster_centers)
         
-        if not verify :
-            print("Working")
+        if not verify and not train :
             self.unauthVerify.emit()
         if train :
             self.threadCompleted.emit(True)
