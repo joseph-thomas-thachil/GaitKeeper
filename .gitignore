@@ -31,7 +31,6 @@ cache/
 *.pro.user
 *.qmlc
 *.mp4
-*.png
 *.avi
 *.csv
 
