@@ -1,5 +1,5 @@
 <span style='font-size:42px'>User Guide</span><br><br>
-<span style='font-size:32px'>Getting Started</span><br>
+<span style='font-size:32px'>Getting Started</span>
 <ol>
   <li>Choose one of the 4 buttons to get started:-</li>
   <ol>
@@ -10,4 +10,35 @@
   </ol>
   <li>You can click the 'Quit' button at the top of the page to exit the application. This button is particularly useful in case of fullscreen usage of the application.</li>
 </ol>
-<span style='font-size:32px'>Registration</span><br>
+<br>
+<span style='font-size:32px'>Registration</span>
+<ol>
+  <li>First, fill the details of the person to be entered in the database.</li>
+  <ol>
+    <li>Details include:- UserID, Name, Position (Designation), Clearance Level and also an image of the person.</li>
+    <li>UserID: [0-9] (digits only)</li>
+    <li>Name: [A-Za-z] (alphabets only)</li>
+    <li>Position: [A-Za-z] (alphabets only)</li>
+    <li>Clearance Level: [0-9] (digits only)<li>
+    <li>Image should be in PNG format (.png).</li>
+  </ol>
+  <li>Next, click the 'Register' button where you will be prompted with a file dialog from which you will have to choose a video in MP4 format (.mp4).</li>
+  <li>This video will be processed and data will be stored in the database.</li>
+  <li>Before processing, a final prompt will be showed to confirm whether you have chosen the right video.</li>
+  <li>On confirming, the processing will begin and the progress will be indicated by the progessbar near the 'Register' button.</li>
+  <li>After the processing is done, The Original video, Detection video and Skeletonized video will be shown. You cannot skip this step.</li>
+  <li>The extracted features data will be stored as CSV file (.csv) in the 'sources' directory within the software directory.</li>
+</ol>
+<br>
+<span style='font-size:32px'>Verification</span>
+<ol>
+  <li>This page is used to compare features of a person from the video with the features stored in the database.</li>
+  <li>If the features match with any one of the person in the database, then the person in that video is an AUTHORIZED person, otherwise the person is UNAUTHORIZED.</li>
+  <li>First, 'Verify' button is selected which will contain a file dialog from which the user operating the software has to select the video to be compared with the database.</li>
+  <li>After that, a confirmation popup will appear to confirm whether the right video is chosen or not.</li>
+  <li>After confirmation, the processing will start with the status shown as the progress in progressbar.</li>
+  <li>Once the processing is done, 3 sets of videos will be shown similar to the Registration process.</li>
+  <li>If the person is an AUTHORIZED person, then the details of that person will be displayed in the left pane along with his/her photo.</li>
+  <li>At the bottom of the left pane, 'AUTHORIZED' text will be shown in green.</li>
+  <li>If the person is not in the database which means, he/she is an UNAUTHORIZED person. In that case, 'UNAUTHORIZED' text will be shown at the bottom of left pane in red.</li>
+</ol>
