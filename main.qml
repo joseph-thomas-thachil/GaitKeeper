@@ -10,8 +10,8 @@ import QtQuick.Dialogs 1.0
 ApplicationWindow {
     id: root
     visible: true
-    minimumWidth: 1680
-    minimumHeight: 900
+    minimumWidth: 1366
+    minimumHeight: 768
     title: qsTr("GaitKeeper")
 
     property var bgcolor: "#2e2f31"
@@ -50,7 +50,7 @@ ApplicationWindow {
             anchors.bottomMargin: root.height / 50
             text: qsTr("GaitKeeper")
             color: "silver"
-            font.pointSize: 42
+            font.pointSize: 36
             fontSizeMode: Text.Fit
             font.family: customFont.name
             verticalAlignment: Text.AlignVCenter
@@ -260,7 +260,7 @@ ApplicationWindow {
                     anchors.top: regButton.bottom
                     anchors.topMargin: 10
                     contentItem: Text {
-                        text: qsTr("\uf007 Verification")
+                        text: qsTr("\uf0c0 Verification")
                         fontSizeMode: Text.Fit
                         id: verButtontext
                         font.family: iconFont.name, customFont.name
@@ -679,7 +679,6 @@ ApplicationWindow {
                         rstart.enabled = true
                         imgUpload.enabled = true
                         upimg.source = fileDialog.fileUrl
-                        imgdef.visible = false
                     }
                     onRejected: {
                         console.log("Canceled")
@@ -881,7 +880,7 @@ ApplicationWindow {
                     textFormat: Text.RichText
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
+                    text: qsTr("<span style='font-size:32px'>Registration Page</span><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
 <li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9]</ul>")
                     color: "gray"
                 }
@@ -909,7 +908,7 @@ ApplicationWindow {
                     textFormat: Text.RichText
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Registration Page</span><br><br><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
+                    text: qsTr("<span style='font-size:32px'>Registration Page</span><ul><li>Fill the 'Profile' and press 'Register' button.</li>\
 <li>Select the video to be processed and stored in the database.</li><li>UserID: [0-9]</li><li>Name: [A-Za-z]</li><li>Position: [A-Za-z]</li><li>Clearance Level: [0-9]</ul>")
                     color: "gray"
                 }
@@ -1603,7 +1602,7 @@ ApplicationWindow {
                     anchors.margins: 5
                     anchors.leftMargin: 0
                     fillMode: 0
-                    autoPlay: true
+                    autoPlay: true                  
                     source: ""
                 }
 
@@ -1728,7 +1727,7 @@ ApplicationWindow {
                     textFormat: Text.RichText
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Click on the 'Verify' button to get started.</li>\
+                    text: qsTr("<span style='font-size:32px'>Verification Page</span><ul><li>Click on the 'Verify' button to get started.</li>\
 <li>Select the video to be processed and compared with the data in the database.</li><li>If a match is found, the details will be showed on the left pane.</li></ul>")
                     color: "gray"
                 }
@@ -1756,7 +1755,7 @@ ApplicationWindow {
                     textFormat: Text.RichText
                     wrapMode: Text.WordWrap
                     font.pointSize: 16
-                    text: qsTr("<span style='font-size:32px'>Verification Page</span><br><br><ul><li>Click on the 'Verify' button to get started.</li>\
+                    text: qsTr("<span style='font-size:32px'>Verification Page</span><ul><li>Click on the 'Verify' button to get started.</li>\
 <li>Select the video to be processed and compared with the data in the database.</li><li>If a match is found, the details will be showed on the left pane.</li></ul>")
                     color: "gray"
                 }
@@ -2001,6 +2000,7 @@ ApplicationWindow {
                             verConfirm.close()
                             start.enabled=false
                             clearCache.enabled=false
+                            progressBar.visible=true
                             videoanalyze.process(false, 0, vervidDialog.fileUrl)
                         }
 
@@ -2065,14 +2065,18 @@ ApplicationWindow {
                 }
 
                 onProcessCompleted: {
+                    console.log("Process Completed")
                     progressBar.visible=false
                     start.enabled = true
                     clearCache.enabled = true
                     vervidPane.visible = true
                     vervidPaneAlt.visible = false
                     detectvideo.source="cache/detect.avi"
+                    detectvideo.play()
                     originalvideo.source="cache/original.avi"
+                    originalvideo.play()
                     skelvideo.source="cache/skel.avi"
+                    skelvideo.play()
                     skelvideo.z = 1
                     detectvideo.z = 1
                     originalvideo.z = 1
